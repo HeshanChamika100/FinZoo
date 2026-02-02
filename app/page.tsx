@@ -9,16 +9,14 @@ import { PetsProvider } from "@/lib/pets-context"
 
 export default function LandingPage() {
   return (
-    <PetsProvider>
-      <div className="min-h-screen">
-        <Header />
-        <main>
-          <Hero />
-          <FeaturedPets />
-          <Stats />
-        </main>
-        <Footer />
-      </div>
-    </PetsProvider>
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <Hero />
+        <FeaturedPets />
+        <Stats />
+      </main>
+      <Footer />
+    </div>
   )
 }

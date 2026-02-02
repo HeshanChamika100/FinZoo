@@ -5,6 +5,7 @@ import { PetCard } from "./pet-card"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Filter } from "lucide-react"
 import { useState, useEffect } from "react"
+import Link from "next/link"
 
 export function FeaturedPets() {
   const { pets } = usePets()
@@ -93,7 +94,11 @@ export function FeaturedPets() {
         {/* View all button */}
         <div
           className={`text-center transition-all duration-700 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        >
+        ><Link
+              href="/shop"
+              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+            >
+            
           <Button
             size="lg"
             variant="outline"
@@ -102,6 +107,7 @@ export function FeaturedPets() {
             View All Pets
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -167,7 +167,7 @@ export function Footer() {
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-background/70">
                 <MapPin className="h-5 w-5 text-primary shrink-0" />
-                <span>123 Pet Street, Animal City, AC 12345</span>
+                <span>508/B/3, Pahala Padukka, Padukka</span>
               </li>
               <li>
                 <a
@@ -175,7 +175,7 @@ export function Footer() {
                   className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
                 >
                   <Phone className="h-5 w-5 text-primary shrink-0" />
-                  <span>+1 (234) 567-890</span>
+                  <span>+94 (70) 196-4941</span>
                 </a>
               </li>
               <li>
@@ -184,7 +184,7 @@ export function Footer() {
                   className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
                 >
                   <Mail className="h-5 w-5 text-primary shrink-0" />
-                  <span>hello@finzoo.com</span>
+                  <span>contact.finzoo@gmail.com</span>
                 </a>
               </li>
             </ul>

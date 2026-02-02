@@ -24,6 +24,12 @@ export function Header() {
 
           <div className="hidden md:flex items-center gap-8">
             <Link
+              href="/shop"
+              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+            >
+              Shop
+            </Link>
+            <Link
               href="#featured"
               className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
@@ -41,8 +47,8 @@ export function Header() {
             >
               Contact
             </Link>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25">
-              Browse All
+            <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25">
+              <Link href="/shop">Browse All</Link>
             </Button>
           </div>
 
@@ -59,6 +65,13 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border animate-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-4">
+              <Link
+                href="/shop"
+                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Shop
+              </Link>
               <Link
                 href="#featured"
                 className="text-muted-foreground hover:text-primary transition-colors px-2 py-2"
@@ -80,8 +93,10 @@ export function Header() {
               >
                 Contact
               </Link>
-              <Button className="bg-primary text-primary-foreground w-full">
-                Browse All
+              <Button asChild className="bg-primary text-primary-foreground w-full">
+                <Link href="/shop" onClick={() => setMobileMenuOpen(false)}>
+                  Browse All
+                </Link>
               </Button>
             </div>
           </div>
