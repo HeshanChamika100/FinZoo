@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Heart, Shield, Sparkles } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 export function Hero() {
   const [mounted, setMounted] = useState(false)
@@ -12,57 +14,41 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-muted/50 to-secondary/20">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/50 via-background to-amber-50/50 dark:from-blue-950/20 dark:via-background dark:to-amber-950/20">
+      {/* Mesh Gradient Background */}
+      <div className="absolute inset-0 overflow-hidden -z-10">
         <div
-          className={`absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl transition-all duration-1000 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}`}
+          className={`absolute top-0 right-0 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px] mix-blend-multiply dark:bg-primary/10 dark:mix-blend-normal transition-all duration-1000 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-20"}`}
         />
         <div
-          className={`absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl transition-all duration-1000 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-        />
-        <div
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/10 rounded-full blur-3xl transition-all duration-1000 delay-500 ${mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
+          className={`absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[100px] mix-blend-multiply dark:bg-secondary/10 dark:mix-blend-normal transition-all duration-1000 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
         />
       </div>
 
-      {/* Floating particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-primary/30 rounded-full animate-pulse"
-            style={{
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${2 + i * 0.5}s`,
-            }}
-          />
-        ))}
-      </div>
+      <div className="container px-4 md:px-6 relative z-10 w-full max-w-7xl">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20">
-        <div className="text-center">
-          {/* Badge */}
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
-          >
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">
-              Trusted by 10,000+ pet lovers
-            </span>
-          </div>
+          {/* Left Column: Content */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
+            {/* Badge */}
+            <div
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/50 dark:border-white/10 shadow-sm transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-foreground/80">
+                Trusted by 10,000+ pet lovers
+              </span>
+            </div>
 
-          {/* Main heading */}
-          <h1
-            className={`text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 transition-all duration-700 delay-150 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <span className="text-balance">
-              Find Your Perfect
+            {/* Main heading */}
+            <h1
+              className={`text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tight text-foreground transition-all duration-700 delay-150 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            >
+              Exotic Fins,
               <br />
-              <span className="text-primary relative">
-                Pet Companion
+              Fluffy Friends &{' '}
+              <span className="text-primary relative inline-block">
+                Feathers
                 <svg
                   className="absolute -bottom-2 left-0 w-full h-3 text-primary/30"
                   viewBox="0 0 200 8"
@@ -81,71 +67,103 @@ export function Hero() {
                   />
                 </svg>
               </span>
-            </span>
-          </h1>
+            </h1>
 
-          {/* Subtitle */}
-          <p
-            className={`text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 text-pretty transition-all duration-700 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            Discover a world of lovable companions. From playful puppies to exotic fish,
-            we connect you with healthy, well-cared-for pets ready to join your family.
-          </p>
+            {/* Subtitle */}
+            <p
+              className={`text-lg sm:text-xl text-muted-foreground max-w-2xl text-pretty transition-all duration-700 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            >
+              Discover a world of lovable companions. From colorful Guppies and ornamental Chickens to adorable Rabbits, we connect you with healthy, well-cared-for pets ready to join your family.
+            </p>
 
-          {/* CTA Buttons */}
-          <div
-            className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transition-all duration-700 delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <Button
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 group px-8 py-6 text-lg shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300"
+            {/* CTA Buttons */}
+            <div
+              className={`flex flex-col sm:flex-row gap-4 w-full sm:w-auto transition-all duration-700 delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
             >
-              Explore Pets
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-primary/30 text-foreground hover:bg-primary/5 px-8 py-6 text-lg bg-transparent"
+              <Button
+                asChild
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 group px-8 py-6 text-lg shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300"
+              >
+                <Link href="/shop">
+                  Explore Pets
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="backdrop-blur-sm bg-white/30 dark:bg-black/10 border-white/50 dark:border-white/10 text-foreground hover:bg-white/50 dark:hover:bg-white/10 px-8 py-6 text-lg"
+              >
+                <Link href="#about">Learn More</Link>
+              </Button>
+            </div>
+
+            {/* Trust indicators */}
+            <div
+              className={`flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-8 transition-all duration-700 delay-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
             >
-              Learn More
-            </Button>
+              {[
+                { icon: Heart, label: "Health Guaranteed", color: "text-red-500", bg: "bg-red-500/10" },
+                { icon: Shield, label: "Verified Breeders", color: "text-blue-500", bg: "bg-blue-500/10" },
+                { icon: Sparkles, label: "24/7 Support", color: "text-amber-500", bg: "bg-amber-500/10" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm">
+                  <div className={`p-1.5 rounded-full ${item.bg}`}>
+                    <item.icon className={`h-4 w-4 ${item.color}`} />
+                  </div>
+                  <span className="text-sm font-medium text-foreground/80">{item.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Trust indicators */}
-          <div
-            className={`flex flex-wrap justify-center gap-8 transition-all duration-700 delay-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          >
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="p-2 rounded-full bg-primary/10">
-                <Heart className="h-5 w-5 text-primary" />
+          {/* Right Column: Hero Image */}
+          <div className={`relative hidden lg:block transition-all duration-1000 delay-500 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-20"}`}>
+            <div className="relative w-full aspect-square max-w-[600px] mx-auto animate-float">
+              {/* Image Glow */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-full blur-[80px] scale-90 animate-pulse-slow" />
+
+              <div className="absolute top-0 left-0 w-[60%] h-[60%] -translate-x-10 translate-y-10 z-10">
+                <Image
+                  src="/guppy.png"
+                  alt="A colorful Guppy fish"
+                  fill
+                  priority
+                  className="object-contain drop-shadow-2xl transform -scale-x-100"
+                />
               </div>
-              <span className="text-sm font-medium">Health Guaranteed</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="p-2 rounded-full bg-secondary/20">
-                <Shield className="h-5 w-5 text-secondary" />
+              <div className="absolute bottom-0 right-0 w-[70%] h-[70%] translate-x-10 z-20">
+                <Image
+                  src="/bunny and chick.png"
+                  alt="A cute bunny and a chick"
+                  fill
+                  priority
+                  className="object-contain drop-shadow-2xl"
+                />
               </div>
-              <span className="text-sm font-medium">Verified Breeders</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="p-2 rounded-full bg-accent/20">
-                <Sparkles className="h-5 w-5 text-accent-foreground" />
-              </div>
-              <span className="text-sm font-medium">24/7 Support</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 transition-all duration-700 delay-1000 ${mounted ? "opacity-100" : "opacity-0"}`}
-      >
-        <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2">
-          <div className="w-1.5 h-3 bg-muted-foreground/50 rounded-full animate-bounce" />
-        </div>
-      </div>
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.8; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1); }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+      `}</style>
     </section>
   )
 }
