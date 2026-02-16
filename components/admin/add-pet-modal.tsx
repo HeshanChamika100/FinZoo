@@ -3,7 +3,7 @@
 import React from "react"
 
 import { useState } from "react"
-import { X, Plus, ImageIcon } from "lucide-react"
+import { X, Plus, ImageIcon, Video } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,6 +23,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { usePets } from "@/lib/pets-context"
+import { uploadPetImage } from "@/components/admin/image-upload"
+import { MultiImageUpload } from "@/components/admin/multi-image-upload"
+import { MultiVideoUpload } from "@/components/admin/multi-video-upload"
+import { uploadPetVideo } from "@/components/admin/video-upload"
 
 interface AddPetModalProps {
   isOpen: boolean
@@ -47,6 +51,13 @@ const speciesOptions = [
 export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const { addPet } = usePets()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [pendingImageFiles, setPendingImageFiles] = useState<File[]>([])
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([])
+  const [imageError, setImageError] = useState<string | null>(null)
+  const [pendingVideoFiles, setPendingVideoFiles] = useState<File[]>([])
+  const [existingVideoUrls, setExistingVideoUrls] = useState<string[]>([])
+  const [videoError, setVideoError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -54,10 +65,14 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     breed: "",
     age: "",
     price: "",
+    price_type: "each" as "each" | "pair",
     image: "",
+    images: [] as string[],
+    video: "",
+    videos: [] as string[],
     description: "",
-    inStock: true,
-    isVisible: true,
+    in_stock: true,
+    is_visible: true,
     featured: false,
   })
 
@@ -97,39 +112,95 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     }
 
     setIsSubmitting(true)
+    setSubmitError(null)
+    setImageError(null)
+    setVideoError(null)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    try {
+      // Upload all pending image files
+      const uploadedImageUrls: string[] = [...existingImageUrls]
+      if (pendingImageFiles.length > 0) {
+        try {
+          const uploads = await Promise.all(
+            pendingImageFiles.map(file => uploadPetImage(file))
+          )
+          uploadedImageUrls.push(...uploads)
+        } catch (err: any) {
+          setImageError(err.message || "Failed to upload images")
+          setIsSubmitting(false)
+          return
+        }
+      }
 
-    addPet({
-      name: formData.name.trim(),
-      species: formData.species,
-      breed: formData.breed.trim(),
-      age: formData.age.trim(),
-      price: Number(formData.price),
-      image: formData.image.trim() || "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop",
-      description: formData.description.trim(),
-      inStock: formData.inStock,
-      isVisible: formData.isVisible,
-      featured: formData.featured,
-    })
+      // First image is the cover
+      const coverImage = uploadedImageUrls[0] || null
+      const additionalImages = uploadedImageUrls
 
-    // Reset form
-    setFormData({
-      name: "",
-      species: "",
-      breed: "",
-      age: "",
-      price: "",
-      image: "",
-      description: "",
-      inStock: true,
-      isVisible: true,
-      featured: false,
-    })
-    setErrors({})
-    setIsSubmitting(false)
-    onClose()
+      // Upload all pending video files
+      const uploadedVideoUrls: string[] = [...existingVideoUrls]
+      if (pendingVideoFiles.length > 0) {
+        try {
+          const uploads = await Promise.all(
+            pendingVideoFiles.map(file => uploadPetVideo(file))
+          )
+          uploadedVideoUrls.push(...uploads)
+        } catch (err: any) {
+          setVideoError(err.message || "Failed to upload videos")
+          setIsSubmitting(false)
+          return
+        }
+      }
+
+      // First video as the main video field for backward compatibility
+      const mainVideo = uploadedVideoUrls[0] || null
+      const allVideos = uploadedVideoUrls
+
+      await addPet({
+        name: formData.name.trim(),
+        species: formData.species,
+        breed: formData.breed.trim(),
+        age: formData.age.trim(),
+        price: Number(formData.price),
+        price_type: formData.price_type,
+        image: coverImage,
+        images: additionalImages,
+        video: mainVideo,
+        videos: allVideos,
+        description: formData.description.trim(),
+        in_stock: formData.in_stock,
+        is_visible: formData.is_visible,
+        featured: formData.featured,
+      })
+
+      // Reset form on success
+      setFormData({
+        name: "",
+        species: "",
+        breed: "",
+        age: "",
+        price: "",
+        price_type: "each" as "each" | "pair",
+        image: "",
+        images: [],
+        video: "",
+        videos: [],
+        description: "",
+        in_stock: true,
+        is_visible: true,
+        featured: false,
+      })
+      setPendingImageFiles([])
+      setExistingImageUrls([])
+      setPendingVideoFiles([])
+      setExistingVideoUrls([])
+      setErrors({})
+      onClose()
+    } catch (error: any) {
+      console.error("Failed to add pet:", error)
+      setSubmitError(error.message || "Failed to add pet. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleClose = () => {
@@ -139,13 +210,24 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       breed: "",
       age: "",
       price: "",
+      price_type: "each" as "each" | "pair",
       image: "",
+      images: [],
+      video: "",
+      videos: [],
       description: "",
-      inStock: true,
-      isVisible: true,
+      in_stock: true,
+      is_visible: true,
       featured: false,
     })
+    setPendingImageFiles([])
+    setExistingImageUrls([])
+    setPendingVideoFiles([])
+    setExistingVideoUrls([])
     setErrors({})
+    setSubmitError(null)
+    setImageError(null)
+    setVideoError(null)
     onClose()
   }
 
@@ -223,40 +305,73 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price" className="text-foreground">Price ($) *</Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0.00"
-                className="bg-background border-input"
-              />
+              <Label htmlFor="price" className="text-foreground">Price (Rs.) *</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0.00"
+                  className="bg-background border-input flex-1"
+                />
+                <Select
+                  value={formData.price_type}
+                  onValueChange={(value: "each" | "pair") => setFormData({ ...formData, price_type: value })}
+                >
+                  <SelectTrigger className="w-24 bg-background border-input">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="each">Each</SelectItem>
+                    <SelectItem value="pair">Pair</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
             </div>
           </div>
 
-          {/* Image URL */}
+          {/* Image Upload */}
           <div className="space-y-2">
-            <Label htmlFor="image" className="text-foreground">
+            <Label className="text-foreground">
               <span className="flex items-center gap-2">
                 <ImageIcon className="h-4 w-4" />
-                Image URL (optional)
+                Pet Images
               </span>
             </Label>
-            <Input
-              id="image"
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder="https://example.com/pet-image.jpg"
-              className="bg-background border-input"
+            <p className="text-xs text-muted-foreground">First image will be the cover photo. You can add multiple images.</p>
+            <MultiImageUpload
+              existingImages={existingImageUrls}
+              onChange={({ existingImages, pendingFiles }) => {
+                setExistingImageUrls(existingImages)
+                setPendingImageFiles(pendingFiles)
+              }}
+              disabled={isSubmitting}
+              error={imageError}
             />
-            <p className="text-xs text-muted-foreground">
-              Leave empty to use a default image
-            </p>
+          </div>
+
+          {/* Video Upload */}
+          <div className="space-y-2">
+            <Label className="text-foreground">
+              <span className="flex items-center gap-2">
+                <Video className="h-4 w-4" />
+                Pet Videos
+              </span>
+            </Label>
+            <p className="text-xs text-muted-foreground">You can add multiple videos.</p>
+            <MultiVideoUpload
+              existingVideos={existingVideoUrls}
+              onChange={({ existingVideos, pendingFiles }) => {
+                setExistingVideoUrls(existingVideos)
+                setPendingVideoFiles(pendingFiles)
+              }}
+              disabled={isSubmitting}
+              error={videoError}
+            />
           </div>
 
           {/* Description */}
@@ -273,29 +388,36 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
           </div>
 
+          {/* Submit Error */}
+          {submitError && (
+            <div className="p-3 bg-destructive/10 border border-destructive rounded-md">
+              <p className="text-sm text-destructive">{submitError}</p>
+            </div>
+          )}
+
           {/* Toggles */}
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="inStock" className="text-foreground">In Stock</Label>
+                <Label htmlFor="in_stock" className="text-foreground">In Stock</Label>
                 <p className="text-xs text-muted-foreground">Pet is available for purchase</p>
               </div>
               <Switch
-                id="inStock"
-                checked={formData.inStock}
-                onCheckedChange={(checked) => setFormData({ ...formData, inStock: checked })}
+                id="in_stock"
+                checked={formData.in_stock}
+                onCheckedChange={(checked) => setFormData({ ...formData, in_stock: checked })}
               />
             </div>
 
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="isVisible" className="text-foreground">Visible on Website</Label>
+                <Label htmlFor="is_visible" className="text-foreground">Visible on Website</Label>
                 <p className="text-xs text-muted-foreground">Show this pet on the public site</p>
               </div>
               <Switch
-                id="isVisible"
-                checked={formData.isVisible}
-                onCheckedChange={(checked) => setFormData({ ...formData, isVisible: checked })}
+                id="is_visible"
+                checked={formData.is_visible}
+                onCheckedChange={(checked) => setFormData({ ...formData, is_visible: checked })}
               />
             </div>
 

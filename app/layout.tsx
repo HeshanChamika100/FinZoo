@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { PetsProvider } from '@/lib/pets-context'
+import { AuthProvider } from '@/lib/auth-context'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -13,21 +14,8 @@ export const metadata: Metadata = {
   description: 'Find your perfect pet companion at FinZoo. We offer a wide selection of healthy, well-cared-for pets with exceptional customer service.',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/logo.png',
+    apple: '/logo.png',
   },
 }
 
@@ -37,11 +25,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <body className={`font-sans antialiased`}>
-        <PetsProvider>
-          {children}
-        </PetsProvider>
+        <AuthProvider>
+          <PetsProvider>
+            {children}
+          </PetsProvider>
+        </AuthProvider>
         <Analytics />
       </body>
     </html>

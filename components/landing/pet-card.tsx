@@ -2,11 +2,11 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Tag } from "lucide-react"
+import { Heart, Tag, Video, Images } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { Pet } from "@/lib/pets-data"
+import type { Pet } from "@/lib/pets-context"
 import { useState } from "react"
 
 interface PetCardProps {
@@ -18,6 +18,8 @@ export function PetCard({ pet, index }: PetCardProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
+  const coverImage = pet.images?.[0] || pet.image || "/placeholder.svg"
+
   return (
     <Card
       className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2"
@@ -27,7 +29,7 @@ export function PetCard({ pet, index }: PetCardProps) {
     >
       <div className="relative overflow-hidden aspect-[4/3]">
         <Image
-          src={pet.image || "/placeholder.svg"}
+          src={coverImage}
           alt={pet.name}
           fill
           className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
@@ -57,16 +59,28 @@ export function PetCard({ pet, index }: PetCardProps) {
               Featured
             </Badge>
           )}
-          {!pet.inStock && (
+          {!pet.in_stock && (
             <Badge variant="secondary" className="bg-destructive/90 text-destructive-foreground">
               Sold Out
+            </Badge>
+          )}
+          {pet.video && (
+            <Badge variant="secondary" className="bg-background/80 text-foreground">
+              <Video className="h-3 w-3 mr-1" />
+              Video
+            </Badge>
+          )}
+          {pet.images && pet.images.length > 1 && (
+            <Badge variant="secondary" className="bg-background/80 text-foreground">
+              <Images className="h-3 w-3 mr-1" />
+              {pet.images.length}
             </Badge>
           )}
         </div>
 
         {/* Quick view on hover */}
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          {pet.inStock ? (
+          {pet.in_stock ? (
             <Button
               asChild
               className="w-full bg-card text-card-foreground hover:bg-card/90"
@@ -95,8 +109,9 @@ export function PetCard({ pet, index }: PetCardProps) {
           <div className="text-right">
             <div className="flex items-center gap-1 text-primary font-bold">
               <Tag className="h-4 w-4" />
-              ${pet.price}
+              Rs. {pet.price.toLocaleString()}
             </div>
+            <span className="text-xs text-muted-foreground">/{pet.price_type === 'pair' ? 'pair' : 'each'}</span>
           </div>
         </div>
 

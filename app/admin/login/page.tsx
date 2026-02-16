@@ -27,11 +27,11 @@ export default function AdminLoginPage() {
     setIsLoading(true)
 
     try {
-      const success = await login(email, password)
-      if (success) {
+      const result = await login(email, password)
+      if (result.success) {
         router.push("/admin/dashboard")
       } else {
-        setError("Invalid email or password")
+        setError(result.error || "Invalid email or password")
       }
     } catch {
       setError("An error occurred. Please try again.")
@@ -150,12 +150,10 @@ export default function AdminLoginPage() {
               </p>
             </div>
 
-            {/* Demo credentials hint */}
+            {/* Note */}
             <div className="mt-6 p-3 rounded-lg bg-muted/50 border border-border">
               <p className="text-xs text-muted-foreground text-center">
-                <span className="font-medium">Demo credentials:</span>
-                <br />
-                Email: admin@finzoo.com | Password: admin123
+                <span className="font-medium">Note:</span> Admin access requires role assignment in Supabase database.
               </p>
             </div>
           </CardContent>

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import {
-  Fish,
   LogOut,
   Search,
   Package,
@@ -30,13 +30,14 @@ import { usePets } from "@/lib/pets-context"
 import { AdminPetCard } from "@/components/admin/admin-pet-card"
 import { QRModal } from "@/components/admin/qr-modal"
 import { AddPetModal } from "@/components/admin/add-pet-modal"
-import type { Pet } from "@/lib/pets-data"
+import { EditPetModal } from "@/components/admin/edit-pet-modal"
+import type { Pet } from "@/lib/pets-context"
 
 type FilterType = "all" | "inStock" | "soldOut" | "visible" | "hidden"
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated, logout } = useAuth()
-  const { pets } = usePets()
+  const { user, profile, isAuthenticated, logout, loading: authLoading } = useAuth()
+  const { pets, loading: petsLoading } = usePets()
   const router = useRouter()
 
   const [searchQuery, setSearchQuery] = useState("")
@@ -45,16 +46,23 @@ export default function AdminDashboard() {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
   const [qrModalOpen, setQrModalOpen] = useState(false)
   const [addPetModalOpen, setAddPetModalOpen] = useState(false)
+  const [editPetModalOpen, setEditPetModalOpen] = useState(false)
+  const [editingPet, setEditingPet] = useState<Pet | null>(null)
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       router.push("/admin/login")
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, authLoading, router])
 
   const handleGenerateQR = (pet: Pet) => {
     setSelectedPet(pet)
     setQrModalOpen(true)
+  }
+
+  const handleEditPet = (pet: Pet) => {
+    setEditingPet(pet)
+    setEditPetModalOpen(true)
   }
 
   // Filter and search pets
@@ -69,16 +77,16 @@ export default function AdminDashboard() {
     let matchesFilter = true
     switch (filter) {
       case "inStock":
-        matchesFilter = pet.inStock
+        matchesFilter = pet.in_stock
         break
       case "soldOut":
-        matchesFilter = !pet.inStock
+        matchesFilter = !pet.in_stock
         break
       case "visible":
-        matchesFilter = pet.isVisible
+        matchesFilter = pet.is_visible
         break
       case "hidden":
-        matchesFilter = !pet.isVisible
+        matchesFilter = !pet.is_visible
         break
     }
 
@@ -88,10 +96,21 @@ export default function AdminDashboard() {
   // Stats
   const stats = {
     total: pets.length,
-    inStock: pets.filter((p) => p.inStock).length,
-    soldOut: pets.filter((p) => !p.inStock).length,
-    visible: pets.filter((p) => p.isVisible).length,
-    hidden: pets.filter((p) => !p.isVisible).length,
+    inStock: pets.filter((p) => p.in_stock).length,
+    soldOut: pets.filter((p) => !p.in_stock).length,
+    visible: pets.filter((p) => p.is_visible).length,
+    hidden: pets.filter((p) => !p.is_visible).length,
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
@@ -105,9 +124,9 @@ export default function AdminDashboard() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <Fish className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-card-foreground">
-                Fin<span className="text-primary">Zoo</span>
+              <Image src="/logo.png" alt="FinZoo Logo" width={40} height={40} />
+              <span className="text-xl font-bold">
+                <span style={{ color: '#196677' }}>Fin</span><span style={{ color: '#c9a97d' }}>Zoo</span>
               </span>
               <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">
                 Admin
@@ -116,7 +135,7 @@ export default function AdminDashboard() {
 
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground hidden sm:block">
-                Welcome, {user?.name}
+                Welcome, {profile?.name || user?.email || "Admin"}
               </span>
               <Button
                 size="sm"
@@ -130,7 +149,7 @@ export default function AdminDashboard() {
                 variant="outline"
                 size="sm"
                 onClick={logout}
-                className="border-border hover:border-destructive hover:text-destructive bg-transparent"
+                className="border-border hover:bg-destructive hover:text-destructive-foreground"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Logout</span>
@@ -256,7 +275,22 @@ export default function AdminDashboard() {
         </p>
 
         {/* Pet list */}
-        {filteredPets.length > 0 ? (
+        {petsLoading ? (
+          <div className="flex flex-col gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-card rounded-xl border border-border p-4 animate-pulse flex gap-4 items-center"
+              >
+                <div className="h-16 w-16 bg-muted rounded-lg shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted rounded w-1/3" />
+                  <div className="h-3 bg-muted rounded w-1/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredPets.length > 0 ? (
           <div
             className={
               viewMode === "grid"
@@ -265,7 +299,7 @@ export default function AdminDashboard() {
             }
           >
             {filteredPets.map((pet) => (
-              <AdminPetCard key={pet.id} pet={pet} onGenerateQR={handleGenerateQR} />
+              <AdminPetCard key={pet.id} pet={pet} onGenerateQR={handleGenerateQR} onEdit={handleEditPet} />
             ))}
           </div>
         ) : (
@@ -292,6 +326,16 @@ export default function AdminDashboard() {
       <AddPetModal
         isOpen={addPetModalOpen}
         onClose={() => setAddPetModalOpen(false)}
+      />
+
+      {/* Edit Pet Modal */}
+      <EditPetModal
+        pet={editingPet}
+        isOpen={editPetModalOpen}
+        onClose={() => {
+          setEditPetModalOpen(false)
+          setEditingPet(null)
+        }}
       />
     </div>
   )
