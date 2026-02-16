@@ -111,6 +111,7 @@ export function PetCard({ pet, index }: PetCardProps) {
               <Tag className="h-4 w-4" />
               Rs. {pet.price.toLocaleString()}
             </div>
+            <span className="text-xs text-muted-foreground">/{pet.price_type === 'pair' ? 'pair' : 'each'}</span>
           </div>
         </div>
 

@@ -171,6 +171,7 @@ export default function PetDetailPage({
             <div className="flex items-center gap-2 mb-6">
               <Tag className="h-5 w-5 text-primary" />
               <span className="text-3xl font-bold text-primary">Rs. {pet.price.toLocaleString()}</span>
+              <span className="text-lg text-muted-foreground">/{pet.price_type === 'pair' ? 'pair' : 'each'}</span>
             </div>
 
             <div className="space-y-4 mb-8">
@@ -205,7 +206,7 @@ export default function PetDetailPage({
                       `Species: ${pet.species}\n` +
                       `Breed: ${pet.breed}\n` +
                       `Age: ${pet.age}\n` +
-                      `Price: Rs. ${pet.price.toLocaleString()}\n\n` +
+                      `Price: Rs. ${pet.price.toLocaleString()} /${pet.price_type === 'pair' ? 'pair' : 'each'}\n\n` +
                       `Could you please share more details?`
                     )}`}
                     target="_blank"

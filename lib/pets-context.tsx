@@ -12,6 +12,7 @@ export interface Pet {
   breed: string
   age: string
   price: number
+  price_type: 'each' | 'pair'
   image: string | null
   images: string[]
   video: string | null

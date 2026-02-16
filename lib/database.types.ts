@@ -17,6 +17,7 @@ export interface Database {
           breed: string
           age: string
           price: number
+          price_type: 'each' | 'pair'
           image: string | null
           description: string | null
           in_stock: boolean
@@ -33,6 +34,7 @@ export interface Database {
           breed: string
           age: string
           price: number
+          price_type?: 'each' | 'pair'
           image?: string | null
           description?: string | null
           in_stock?: boolean
@@ -49,6 +51,7 @@ export interface Database {
           breed?: string
           age?: string
           price?: number
+          price_type?: 'each' | 'pair'
           image?: string | null
           description?: string | null
           in_stock?: boolean

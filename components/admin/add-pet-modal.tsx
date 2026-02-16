@@ -63,6 +63,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     breed: "",
     age: "",
     price: "",
+    price_type: "each" as "each" | "pair",
     image: "",
     images: [] as string[],
     video: "",
@@ -150,6 +151,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         breed: formData.breed.trim(),
         age: formData.age.trim(),
         price: Number(formData.price),
+        price_type: formData.price_type,
         image: coverImage,
         images: additionalImages,
         video: videoUrl,
@@ -166,6 +168,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         breed: "",
         age: "",
         price: "",
+        price_type: "each" as "each" | "pair",
         image: "",
         images: [],
         video: "",
@@ -194,6 +197,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       breed: "",
       age: "",
       price: "",
+      price_type: "each" as "each" | "pair",
       image: "",
       images: [],
       video: "",
@@ -286,17 +290,31 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price" className="text-foreground">Price ($) *</Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0.00"
-                className="bg-background border-input"
-              />
+              <Label htmlFor="price" className="text-foreground">Price (Rs.) *</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0.00"
+                  className="bg-background border-input flex-1"
+                />
+                <Select
+                  value={formData.price_type}
+                  onValueChange={(value: "each" | "pair") => setFormData({ ...formData, price_type: value })}
+                >
+                  <SelectTrigger className="w-24 bg-background border-input">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="each">Each</SelectItem>
+                    <SelectItem value="pair">Pair</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
             </div>
           </div>
