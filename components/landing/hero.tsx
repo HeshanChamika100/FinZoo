@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Heart, Shield, Sparkles } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -21,11 +20,9 @@ export function Hero() {
   const ctaRef = useRef<HTMLDivElement>(null)
   const trustRef = useRef<HTMLDivElement>(null)
   const contentColumnRef = useRef<HTMLDivElement>(null)
-  const imageContainerRef = useRef<HTMLDivElement>(null)
-  const guppyRef = useRef<HTMLDivElement>(null)
-  const bunnyRef = useRef<HTMLDivElement>(null)
   const particlesRef = useRef<HTMLDivElement>(null)
   const transitionOverlayRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -97,28 +94,6 @@ export function Hero() {
         )
       }
 
-      // Hero images — dramatic 3D entrance
-      tl.fromTo(
-        imageContainerRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.5 },
-        0.8
-      )
-
-      tl.fromTo(
-        guppyRef.current,
-        { x: -200, rotateZ: -30, scale: 0.3, opacity: 0, transformPerspective: 1000 },
-        { x: 0, rotateZ: 0, scale: 1, opacity: 1, duration: 1.2, ease: "elastic.out(1, 0.6)" },
-        1.0
-      )
-
-      tl.fromTo(
-        bunnyRef.current,
-        { x: 200, rotateZ: 20, scale: 0.3, opacity: 0, transformPerspective: 1000 },
-        { x: 0, rotateZ: 0, scale: 1, opacity: 1, duration: 1.2, ease: "elastic.out(1, 0.6)" },
-        1.2
-      )
-
       // Floating particles — each on its own unpredictable path
       if (particlesRef.current) {
         const particles = particlesRef.current.children
@@ -161,52 +136,6 @@ export function Hero() {
       driftOrb(bgOrb2Ref.current, 60, 70, [0.8, 1.1], [8, 14])
       driftOrb(bgOrb3Ref.current, 50, 60, [0.9, 1.2], [6, 11])
 
-      // Fish (guppy) — gentle swimming with tail flicks
-      const swimFish = (el: HTMLDivElement | null) => {
-        if (!el) return
-        // Main body: gentle drift only — no rotation so the fish stays facing its direction
-        gsap.to(el, {
-          y: gsap.utils.random(-18, 5),
-          x: gsap.utils.random(-8, 8),
-          duration: gsap.utils.random(2.5, 4.5),
-          ease: "sine.inOut",
-          onComplete: () => swimFish(el),
-        })
-      }
-      swimFish(guppyRef.current)
-
-      // Tail flick — periodic subtle vertical pulse (no scaleX to avoid flipping)
-      const flickTail = (el: HTMLDivElement | null) => {
-        if (!el) return
-        gsap.to(el, {
-          scaleY: 0.97,
-          duration: 0.12,
-          ease: "power2.in",
-          yoyo: true,
-          repeat: 1,
-          onComplete: () => {
-            gsap.set(el, { scaleY: 1 })
-            gsap.delayedCall(gsap.utils.random(1.5, 4), () => flickTail(el))
-          },
-        })
-      }
-      gsap.delayedCall(3, () => flickTail(guppyRef.current))
-
-      // Bunny — subtle breathing (very slight scale oscillation)
-      const breatheBunny = (el: HTMLDivElement | null) => {
-        if (!el) return
-        gsap.to(el, {
-          scaleY: gsap.utils.random(1.005, 1.02),
-          scaleX: gsap.utils.random(0.99, 1.005),
-          y: gsap.utils.random(-6, 2),
-          rotateZ: gsap.utils.random(-1.5, 1.5),
-          duration: gsap.utils.random(2.5, 4),
-          ease: "sine.inOut",
-          onComplete: () => breatheBunny(el),
-        })
-      }
-      breatheBunny(bunnyRef.current)
-
       // ── Scroll-driven exit narrative ──
       const exitTl = gsap.timeline({
         scrollTrigger: {
@@ -225,27 +154,6 @@ export function Hero() {
           0
         )
       }
-
-      // Fish swims away to the left (its natural facing direction)
-      exitTl.to(
-        guppyRef.current,
-        { x: -300, y: -80, rotateZ: -15, opacity: 0, ease: "power1.in" },
-        0
-      )
-
-      // Bunny drifts downward — staying grounded
-      exitTl.to(
-        bunnyRef.current,
-        { y: 120, opacity: 0, scale: 0.9, ease: "power1.in" },
-        0.05
-      )
-
-      // Glow rings and image container fade
-      exitTl.to(
-        imageContainerRef.current,
-        { opacity: 0, scale: 0.95, ease: "power1.in" },
-        0.1
-      )
 
       // Background orbs shift and dissolve into next section palette
       exitTl.to(
@@ -327,9 +235,22 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/50 via-background to-amber-50/50 dark:from-blue-950/20 dark:via-background dark:to-amber-950/20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ perspective: "1200px" }}
     >
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover -z-20"
+      >
+        <source src="/background-video.mp4" type="video/mp4" />
+      </video>
+      {/* Video Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/80 -z-10" />
       {/* Animated Background Orbs */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div
@@ -381,18 +302,18 @@ export function Hero() {
       </div>
 
       <div className="container px-4 md:px-6 relative z-10 w-full max-w-7xl">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+        <div className="flex justify-center items-center">
 
-          {/* Left Column: Content */}
-          <div ref={contentColumnRef} className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
+          {/* Content */}
+          <div ref={contentColumnRef} className="flex flex-col items-center text-center space-y-8 max-w-4xl">
             {/* Badge */}
             <div
               ref={badgeRef}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/50 dark:border-white/10 shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-sm"
               style={{ transformStyle: "preserve-3d", opacity: 0 }}
             >
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground/80">
+              <Sparkles className="h-4 w-4 text-emerald-400" />
+              <span className="text-sm font-medium text-white">
                 Trusted by 10,000+ pet lovers
               </span>
             </div>
@@ -400,14 +321,14 @@ export function Hero() {
             {/* Main heading */}
             <h1
               ref={headingRef}
-              className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tight text-foreground"
+              className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tight text-white"
               style={{ transformStyle: "preserve-3d" }}
             >
               <span className="hero-word inline-block" style={{ opacity: 0 }}>Exotic Fins,</span>
               <br />
               <span className="hero-word inline-block" style={{ opacity: 0 }}>Fluffy Friends &{' '}</span>
               <span className="hero-word inline-block relative" style={{ opacity: 0 }}>
-                <span className="text-primary">Feathers</span>
+                <span className="text-emerald-400">Feathers</span>
                 <svg
                   className="hero-underline absolute -bottom-2 left-0 w-full h-3 text-primary/30"
                   viewBox="0 0 200 8"
@@ -427,7 +348,7 @@ export function Hero() {
             {/* Subtitle */}
             <p
               ref={subtitleRef}
-              className="text-lg sm:text-xl text-muted-foreground max-w-2xl text-pretty"
+              className="text-lg sm:text-xl text-white/90 max-w-2xl text-pretty"
               style={{ opacity: 0, transformStyle: "preserve-3d" }}
             >
               Discover a world of lovable companions. From colorful Guppies and ornamental Chickens to adorable Rabbits, we connect you with healthy, well-cared-for pets ready to join your family.
@@ -460,7 +381,7 @@ export function Hero() {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="backdrop-blur-sm bg-white/30 dark:bg-black/10 border-white/50 dark:border-white/10 text-foreground hover:bg-white/50 dark:hover:bg-white/10 px-8 py-6 text-lg"
+                  className="backdrop-blur-sm bg-white/20 border-white/40 text-white hover:bg-white/30 hover:border-white/60 px-8 py-6 text-lg"
                 >
                   <Link href="#about">Learn More</Link>
                 </Button>
@@ -468,7 +389,7 @@ export function Hero() {
             </div>
 
             {/* Trust indicators */}
-            <div ref={trustRef} className="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-8" style={{ transformStyle: "preserve-3d" }}>
+            <div ref={trustRef} className="flex flex-wrap cursor-pointer justify-center gap-4 sm:gap-8" style={{ transformStyle: "preserve-3d" }}>
               {[
                 { icon: Heart, label: "Health Guaranteed", color: "text-red-500", bg: "bg-red-500/10" },
                 { icon: Shield, label: "Verified Breeders", color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -478,52 +399,19 @@ export function Hero() {
                   key={i}
                   onMouseMove={handleCardTilt}
                   onMouseLeave={handleCardLeave}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                   style={{ opacity: 0, transformStyle: "preserve-3d", willChange: "transform" }}
                 >
                   <div className={`p-1.5 rounded-full ${item.bg}`}>
                     <item.icon className={`h-4 w-4 ${item.color}`} />
                   </div>
-                  <span className="text-sm font-medium text-foreground/80">{item.label}</span>
+                  <span className="text-sm font-medium text-white">{item.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right Column: Hero Images with 3D */}
-          <div
-            ref={imageContainerRef}
-            className="relative hidden lg:block"
-            style={{ opacity: 0, perspective: "1000px", transformStyle: "preserve-3d" }}
-          >
-            <div className="relative w-full aspect-square max-w-[600px] mx-auto">
-              {/* Rotating glow ring */}
-              <div className="absolute inset-[10%] border-2 border-dashed border-primary/20 rounded-full animate-spin-slow" />
-              <div className="absolute inset-[20%] border border-[#c9a97d]/20 rounded-full animate-spin-slow-reverse" />
 
-              {/* Image Glow */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#196677]/20 to-[#c9a97d]/20 rounded-full blur-[80px] scale-90" />
-
-              <div ref={guppyRef} className="absolute top-0 left-0 w-[60%] h-[60%] -translate-x-10 translate-y-10 z-10" style={{ transformStyle: "preserve-3d", opacity: 0 }}>
-                <Image
-                  src="/guppy.png"
-                  alt="A colorful Guppy fish"
-                  fill
-                  priority
-                  className="object-contain drop-shadow-2xl transform -scale-x-100"
-                />
-              </div>
-              <div ref={bunnyRef} className="absolute bottom-0 right-0 w-[70%] h-[70%] translate-x-10 z-20" style={{ transformStyle: "preserve-3d", opacity: 0 }}>
-                <Image
-                  src="/bunny and chick.png"
-                  alt="A cute bunny and a chick"
-                  fill
-                  priority
-                  className="object-contain drop-shadow-2xl"
-                />
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
