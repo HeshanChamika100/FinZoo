@@ -83,7 +83,7 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="text-lg font-bold text-primary">${pet.price}</span>
+                <span className="text-lg font-bold text-primary">Rs. {pet.price.toLocaleString()}</span>
                 <div className="flex gap-1">
                   {pet.featured && (
                     <Badge variant="secondary" className="text-xs bg-accent text-accent-foreground">

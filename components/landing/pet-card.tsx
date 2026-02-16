@@ -109,7 +109,7 @@ export function PetCard({ pet, index }: PetCardProps) {
           <div className="text-right">
             <div className="flex items-center gap-1 text-primary font-bold">
               <Tag className="h-4 w-4" />
-              ${pet.price}
+              Rs. {pet.price.toLocaleString()}
             </div>
           </div>
         </div>
