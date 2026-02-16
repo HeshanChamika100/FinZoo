@@ -10,6 +10,7 @@ import gsap from "gsap"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isOverHero, setIsOverHero] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
   const headerRef = useRef<HTMLElement>(null)
@@ -46,6 +47,19 @@ export function Header() {
     return () => ctx.revert()
   }, [])
 
+  // Detect scroll position to change header style
+  useEffect(() => {
+    const handleScroll = () => {
+      // Consider hero section as roughly the viewport height
+      const heroHeight = window.innerHeight - 100
+      setIsOverHero(window.scrollY < heroHeight)
+    }
+
+    handleScroll() // Check initial position
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const scrollTo = useCallback((id: string) => {
     const doScroll = () => {
       const el = document.getElementById(id)
@@ -66,7 +80,14 @@ export function Header() {
   }, [pathname, router])
 
   return (
-    <header ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <header 
+      ref={headerRef} 
+      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
+        isOverHero 
+          ? 'bg-transparent border-transparent' 
+          : 'bg-background/80 backdrop-blur-md border-border'
+      }`}
+    >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link ref={logoRef} href="/" className="flex items-center gap-2 group" style={{ transformStyle: "preserve-3d" }}>
@@ -85,25 +106,33 @@ export function Header() {
           <div ref={navLinksRef} className="hidden md:flex items-center gap-8">
             <Link
               href="/shop"
-              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+              className={`hover:text-primary transition-colors duration-200 font-medium ${
+                isOverHero ? 'text-white' : 'text-muted-foreground'
+              }`}
             >
               Shop
             </Link>
             <button
               onClick={() => scrollTo('featured')}
-              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+              className={`hover:text-primary transition-colors duration-200 font-medium ${
+                isOverHero ? 'text-white' : 'text-muted-foreground'
+              }`}
             >
               Featured Pets
             </button>
             <button
               onClick={() => scrollTo('about')}
-              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+              className={`hover:text-primary transition-colors duration-200 font-medium ${
+                isOverHero ? 'text-white' : 'text-muted-foreground'
+              }`}
             >
               About Us
             </button>
             <button
               onClick={() => scrollTo('contact')}
-              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+              className={`hover:text-primary transition-colors duration-200 font-medium ${
+                isOverHero ? 'text-white' : 'text-muted-foreground'
+              }`}
             >
               Contact
             </button>
@@ -115,7 +144,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className={`md:hidden ${isOverHero ? 'text-white hover:text-white' : ''}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -123,34 +152,44 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-in slide-in-from-top-2 duration-200">
+          <div className={`md:hidden py-4 border-t animate-in rounded-xl text-center slide-in-from-top-2 duration-200 ${
+            isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'border-border'
+          }`}>
             <div className="flex flex-col gap-4">
               <Link
                 href="/shop"
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2"
+                className={`hover:text-primary transition-colors px-2 py-2 ${
+                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
               </Link>
               <button
                 onClick={() => scrollTo('featured')}
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2 text-left"
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${
+                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
               >
                 Featured Pets
               </button>
               <button
                 onClick={() => scrollTo('about')}
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2 text-left"
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${
+                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
               >
                 About Us
               </button>
               <button
                 onClick={() => scrollTo('contact')}
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2 text-left"
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${
+                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
               >
                 Contact
               </button>
-              <Button asChild className="bg-primary text-primary-foreground w-full">
+              <Button asChild className="bg-primary text-primary-foreground w-1/2 mx-auto">
                 <Link href="/shop" onClick={() => setMobileMenuOpen(false)}>
                   Browse All
                 </Link>
