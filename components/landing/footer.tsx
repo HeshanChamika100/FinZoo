@@ -1,16 +1,75 @@
 "use client"
 
 import Link from "next/link"
-import { Fish, Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useEffect, useRef } from "react"
+import gsap from "gsap"
 
 export function Footer() {
+  const footerRef = useRef<HTMLElement>(null)
+  const newsletterRef = useRef<HTMLDivElement>(null)
+  const columnsRef = useRef<HTMLDivElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+
+          const ctx = gsap.context(() => {
+            const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+
+            // Newsletter section slides up with 3D
+            if (newsletterRef.current) {
+              tl.fromTo(
+                newsletterRef.current,
+                { y: 60, opacity: 0, rotateX: -10, transformPerspective: 800 },
+                { y: 0, opacity: 1, rotateX: 0, duration: 0.8 },
+                0
+              )
+            }
+
+            // Footer columns stagger 3D entrance
+            if (columnsRef.current) {
+              tl.fromTo(
+                columnsRef.current.children,
+                { y: 80, opacity: 0, rotateY: -25, transformPerspective: 600 },
+                { y: 0, opacity: 1, rotateY: 0, duration: 0.9, stagger: 0.12, ease: "back.out(1.2)" },
+                0.3
+              )
+            }
+
+            // Bottom bar fades in
+            if (bottomRef.current) {
+              tl.fromTo(
+                bottomRef.current,
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.6 },
+                0.8
+              )
+            }
+          }, footerRef)
+
+          return () => ctx.revert()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (footerRef.current) observer.observe(footerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <footer id="contact" className="bg-foreground text-background">
+    <footer id="contact" ref={footerRef} className="bg-foreground text-background" style={{ perspective: "1200px" }}>
       {/* Newsletter section */}
       <div className="border-b border-background/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <div ref={newsletterRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12" style={{ opacity: 0, transformStyle: "preserve-3d" }}>
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div>
               <h3 className="text-2xl font-bold mb-2">Stay in the Loop</h3>
@@ -34,13 +93,13 @@ export function Footer() {
 
       {/* Main footer */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div ref={columnsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" style={{ transformStyle: "preserve-3d" }}>
           {/* Brand */}
-          <div>
+          <div style={{ opacity: 0 }}>
             <Link href="/" className="flex items-center gap-2 mb-6">
-              <Fish className="h-8 w-8 text-primary" />
+              <Image src="/logo.png" alt="FinZoo Logo" width={32} height={32} />
               <span className="text-2xl font-bold">
-                Fin<span className="text-primary">Zoo</span>
+                <span style={{ color: '#196677' }}>Fin</span><span style={{ color: '#c9a97d' }}>Zoo</span>
               </span>
             </Link>
             <p className="text-background/70 mb-6">
@@ -76,7 +135,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div style={{ opacity: 0 }}>
             <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
             <ul className="space-y-3">
               <li>
@@ -115,7 +174,7 @@ export function Footer() {
           </div>
 
           {/* Pet Categories */}
-          <div>
+          <div style={{ opacity: 0 }}>
             <h4 className="text-lg font-semibold mb-6">Categories</h4>
             <ul className="space-y-3">
               <li>
@@ -162,7 +221,7 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div style={{ opacity: 0 }}>
             <h4 className="text-lg font-semibold mb-6">Contact Us</h4>
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-background/70">
@@ -194,7 +253,7 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-background/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        <div ref={bottomRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6" style={{ opacity: 0 }}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-background/50 text-sm">
               &copy; {new Date().getFullYear()} FinZoo. All rights reserved.

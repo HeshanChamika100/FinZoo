@@ -4,13 +4,47 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
+import gsap from "gsap"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const headerRef = useRef<HTMLElement>(null)
+  const logoRef = useRef<HTMLAnchorElement>(null)
+  const navLinksRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Header slides down from above
+      gsap.fromTo(
+        headerRef.current,
+        { y: -100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+      )
+
+      // Logo 3D flip in
+      if (logoRef.current) {
+        gsap.fromTo(
+          logoRef.current,
+          { rotateY: -90, opacity: 0, transformPerspective: 800 },
+          { rotateY: 0, opacity: 1, duration: 1, ease: "back.out(1.7)", delay: 0.3 }
+        )
+      }
+
+      // Nav links stagger from right
+      if (navLinksRef.current) {
+        gsap.fromTo(
+          navLinksRef.current.children,
+          { x: 30, opacity: 0, rotateY: 15, transformPerspective: 600 },
+          { x: 0, opacity: 1, rotateY: 0, duration: 0.6, stagger: 0.08, ease: "power2.out", delay: 0.5 }
+        )
+      }
+    })
+    return () => ctx.revert()
+  }, [])
 
   const scrollTo = useCallback((id: string) => {
     const doScroll = () => {
@@ -24,7 +58,6 @@ export function Header() {
 
     if (pathname !== '/') {
       router.push(`/#${id}`)
-      // Wait for navigation then scroll
       setTimeout(doScroll, 500)
     } else {
       doScroll()
@@ -33,10 +66,10 @@ export function Header() {
   }, [pathname, router])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <header ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link ref={logoRef} href="/" className="flex items-center gap-2 group" style={{ transformStyle: "preserve-3d" }}>
             <Image
               src="/logo.png"
               alt="FinZoo Logo"
@@ -49,7 +82,7 @@ export function Header() {
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div ref={navLinksRef} className="hidden md:flex items-center gap-8">
             <Link
               href="/shop"
               className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
