@@ -115,52 +115,52 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
             {/* Controls */}
             <div className="flex flex-wrap items-center gap-4 mt-auto pt-3 border-t border-border">
               {/* Stock Toggle */}
-              <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => toggleStock(pet.id)}
+                className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Switch
                   checked={pet.in_stock}
-                  onCheckedChange={() => toggleStock(pet.id)} className="hover:cursor-pointer"
+                  onCheckedChange={() => toggleStock(pet.id)}
+                  className="pointer-events-none"
                 />
-                <span
-                  onClick={() => toggleStock(pet.id)}
-                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1 select-none"
-                >
-                  {pet.in_stock ? (
-                    <>
-                      <Package className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">In Stock</span>
-                    </>
-                  ) : (
-                    <>
-                      <PackageX className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">Sold Out</span>
-                    </>
-                  )}
-                </span>
-              </div>
+                {pet.in_stock ? (
+                  <>
+                    <Package className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">In Stock</span>
+                  </>
+                ) : (
+                  <>
+                    <PackageX className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Sold Out</span>
+                  </>
+                )}
+              </button>
 
               {/* Visibility Toggle */}
-              <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => toggleVisibility(pet.id)}
+                className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Switch
                   checked={pet.is_visible}
-                  onCheckedChange={() => toggleVisibility(pet.id)} className="cursor-pointer"
+                  onCheckedChange={() => toggleVisibility(pet.id)}
+                  className="pointer-events-none"
                 />
-                <span
-                  onClick={() => toggleVisibility(pet.id)}
-                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1 select-none"
-                >
-                  {pet.is_visible ? (
-                    <>
-                      <Eye className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">Visible</span>
-                    </>
-                  ) : (
-                    <>
-                      <EyeOff className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">Hidden</span>
-                    </>
-                  )}
-                </span>
-              </div>
+                {pet.is_visible ? (
+                  <>
+                    <Eye className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Visible</span>
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Hidden</span>
+                  </>
+                )}
+              </button>
 
               {/* Edit Button */}
               <Button
