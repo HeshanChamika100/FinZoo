@@ -1,7 +1,6 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js"
 
@@ -29,7 +28,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
@@ -141,12 +139,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut()
       setUser(null)
       setProfile(null)
-      router.push("/")
+      await supabase.auth.signOut()
+      // Hard redirect ensures clean state, avoids race with onAuthStateChange
+      window.location.href = "/admin/login"
     } catch (error) {
       console.error("Error logging out:", error)
+      // Force redirect even on error
+      window.location.href = "/"
     }
   }
 

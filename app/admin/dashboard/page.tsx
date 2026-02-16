@@ -36,7 +36,7 @@ import type { Pet } from "@/lib/pets-context"
 type FilterType = "all" | "inStock" | "soldOut" | "visible" | "hidden"
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated, logout, loading: authLoading } = useAuth()
+  const { user, profile, isAuthenticated, logout, loading: authLoading } = useAuth()
   const { pets, loading: petsLoading } = usePets()
   const router = useRouter()
 
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
 
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground hidden sm:block">
-                Welcome, {user?.name}
+                Welcome, {profile?.name || user?.email || "Admin"}
               </span>
               <Button
                 size="sm"
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
                 variant="outline"
                 size="sm"
                 onClick={logout}
-                className="border-border hover:border-destructive hover:text-destructive bg-transparent"
+                className="border-border hover:bg-destructive hover:text-destructive-foreground"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Logout</span>
