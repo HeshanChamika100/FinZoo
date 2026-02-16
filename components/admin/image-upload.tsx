@@ -147,7 +147,7 @@ export function ImageUpload({ value, onFileChange, onRemove, disabled, error }: 
                 type="button"
                 variant="secondary"
                 size="icon"
-                className="h-8 w-8 bg-background/80 hover:bg-background shadow-sm"
+                className="h-8 w-8 bg-black/50 hover:bg-background shadow-sm"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload className="h-4 w-4" />
@@ -156,7 +156,7 @@ export function ImageUpload({ value, onFileChange, onRemove, disabled, error }: 
                 type="button"
                 variant="secondary"
                 size="icon"
-                className="h-8 w-8 bg-background/80 hover:bg-destructive hover:text-destructive-foreground shadow-sm"
+                className="h-8 w-8 bg-destructive hover:bg-destructive hover:text-destructive-foreground shadow-sm"
                 onClick={handleRemove}
               >
                 <X className="h-4 w-4" />
