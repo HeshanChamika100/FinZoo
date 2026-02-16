@@ -90,7 +90,7 @@ export default function PetDetailPage({
               {pet.featured && (
                 <Badge className="bg-primary text-primary-foreground">Featured</Badge>
               )}
-              {!pet.inStock && (
+              {!pet.in_stock && (
                 <Badge variant="destructive">Sold Out</Badge>
               )}
             </div>
@@ -134,9 +134,27 @@ export default function PetDetailPage({
               <Button
                 size="lg"
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                disabled={!pet.inStock}
+                disabled={!pet.in_stock}
+                asChild={pet.in_stock}
               >
-                {pet.inStock ? "Inquire Now" : "Notify When Available"}
+                {pet.in_stock ? (
+                  <a
+                    href={`https://wa.me/94701964941?text=${encodeURIComponent(
+                      `Hi! I'm interested in *${pet.name}*\n\n` +
+                      `Species: ${pet.species}\n` +
+                      `Breed: ${pet.breed}\n` +
+                      `Age: ${pet.age}\n` +
+                      `Price: $${pet.price}\n\n` +
+                      `Could you please share more details?`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Inquire Now
+                  </a>
+                ) : (
+                  "Notify When Available"
+                )}
               </Button>
               <Button
                 size="lg"
