@@ -179,10 +179,10 @@ export function Services() {
       rotateY: x * 20,
       rotateX: -y * 20,
       scale: 1.08,
-      duration: 0.0,
-      ease: "power1.out",
+      duration: 0.25,
+      ease: "power2.out",
       transformPerspective: 600,
-      overwrite: true,
+      overwrite: "auto",
     })
   }
 
@@ -191,9 +191,9 @@ export function Services() {
       rotateY: 0,
       rotateX: 0,
       scale: 1,
-      duration: 0.4,
-      ease: "elastic.out(1, 0.5)",
-      overwrite: true,
+      duration: 0.5,
+      ease: "power2.out",
+      overwrite: "auto",
     })
   }
 
