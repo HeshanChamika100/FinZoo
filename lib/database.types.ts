@@ -19,6 +19,9 @@ export interface Database {
           price: number
           price_type: 'each' | 'pair'
           image: string | null
+          images: string[]
+          video: string | null
+          videos: string[]
           description: string | null
           in_stock: boolean
           is_visible: boolean
@@ -36,6 +39,9 @@ export interface Database {
           price: number
           price_type?: 'each' | 'pair'
           image?: string | null
+          images?: string[]
+          video?: string | null
+          videos?: string[]
           description?: string | null
           in_stock?: boolean
           is_visible?: boolean
@@ -53,6 +59,9 @@ export interface Database {
           price?: number
           price_type?: 'each' | 'pair'
           image?: string | null
+          images?: string[]
+          video?: string | null
+          videos?: string[]
           description?: string | null
           in_stock?: boolean
           is_visible?: boolean

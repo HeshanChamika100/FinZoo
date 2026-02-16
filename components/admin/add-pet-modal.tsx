@@ -25,7 +25,8 @@ import {
 import { usePets } from "@/lib/pets-context"
 import { uploadPetImage } from "@/components/admin/image-upload"
 import { MultiImageUpload } from "@/components/admin/multi-image-upload"
-import { VideoUpload, uploadPetVideo } from "@/components/admin/video-upload"
+import { MultiVideoUpload } from "@/components/admin/multi-video-upload"
+import { uploadPetVideo } from "@/components/admin/video-upload"
 
 interface AddPetModalProps {
   isOpen: boolean
@@ -54,7 +55,8 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const [pendingImageFiles, setPendingImageFiles] = useState<File[]>([])
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([])
   const [imageError, setImageError] = useState<string | null>(null)
-  const [pendingVideo, setPendingVideo] = useState<File | null>(null)
+  const [pendingVideoFiles, setPendingVideoFiles] = useState<File[]>([])
+  const [existingVideoUrls, setExistingVideoUrls] = useState<string[]>([])
   const [videoError, setVideoError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
@@ -67,6 +69,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     image: "",
     images: [] as string[],
     video: "",
+    videos: [] as string[],
     description: "",
     in_stock: true,
     is_visible: true,
@@ -133,17 +136,24 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       const coverImage = uploadedImageUrls[0] || null
       const additionalImages = uploadedImageUrls
 
-      // Upload video if there's a pending file
-      let videoUrl: string | null = formData.video || null
-      if (pendingVideo) {
+      // Upload all pending video files
+      const uploadedVideoUrls: string[] = [...existingVideoUrls]
+      if (pendingVideoFiles.length > 0) {
         try {
-          videoUrl = await uploadPetVideo(pendingVideo)
+          const uploads = await Promise.all(
+            pendingVideoFiles.map(file => uploadPetVideo(file))
+          )
+          uploadedVideoUrls.push(...uploads)
         } catch (err: any) {
-          setVideoError(err.message || "Failed to upload video")
+          setVideoError(err.message || "Failed to upload videos")
           setIsSubmitting(false)
           return
         }
       }
+
+      // First video as the main video field for backward compatibility
+      const mainVideo = uploadedVideoUrls[0] || null
+      const allVideos = uploadedVideoUrls
 
       await addPet({
         name: formData.name.trim(),
@@ -154,7 +164,8 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         price_type: formData.price_type,
         image: coverImage,
         images: additionalImages,
-        video: videoUrl,
+        video: mainVideo,
+        videos: allVideos,
         description: formData.description.trim(),
         in_stock: formData.in_stock,
         is_visible: formData.is_visible,
@@ -172,6 +183,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         image: "",
         images: [],
         video: "",
+        videos: [],
         description: "",
         in_stock: true,
         is_visible: true,
@@ -179,7 +191,8 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       })
       setPendingImageFiles([])
       setExistingImageUrls([])
-      setPendingVideo(null)
+      setPendingVideoFiles([])
+      setExistingVideoUrls([])
       setErrors({})
       onClose()
     } catch (error: any) {
@@ -201,6 +214,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       image: "",
       images: [],
       video: "",
+      videos: [],
       description: "",
       in_stock: true,
       is_visible: true,
@@ -208,7 +222,8 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     })
     setPendingImageFiles([])
     setExistingImageUrls([])
-    setPendingVideo(null)
+    setPendingVideoFiles([])
+    setExistingVideoUrls([])
     setErrors({})
     setSubmitError(null)
     setImageError(null)
@@ -344,15 +359,15 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             <Label className="text-foreground">
               <span className="flex items-center gap-2">
                 <Video className="h-4 w-4" />
-                Pet Video
+                Pet Videos
               </span>
             </Label>
-            <VideoUpload
-              value={formData.video}
-              onFileChange={(file) => setPendingVideo(file)}
-              onRemove={() => {
-                setFormData({ ...formData, video: "" })
-                setPendingVideo(null)
+            <p className="text-xs text-muted-foreground">You can add multiple videos.</p>
+            <MultiVideoUpload
+              existingVideos={existingVideoUrls}
+              onChange={({ existingVideos, pendingFiles }) => {
+                setExistingVideoUrls(existingVideos)
+                setPendingVideoFiles(pendingFiles)
               }}
               disabled={isSubmitting}
               error={videoError}
