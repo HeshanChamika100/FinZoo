@@ -94,7 +94,7 @@ export function FeaturedPets() {
     }
   }, [filter])
 
-  const visiblePets = pets.filter((pet) => pet.is_visible)
+  const visiblePets = pets.filter((pet) => pet.is_visible && pet.featured)
   const filteredPets =
     filter === "all"
       ? visiblePets

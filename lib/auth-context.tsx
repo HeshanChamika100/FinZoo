@@ -75,13 +75,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    // Check for existing session on mount
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          fetchProfile(session.user.id)
+        }
+      } catch (error) {
+        console.error("Error initializing auth:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    initializeAuth()
+
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Set user and mark loading done immediately — don't block on profile fetch
       setUser(session?.user ?? null)
-      setLoading(false)
 
       if (session?.user) {
-        // Fire-and-forget: profile loads in the background
         fetchProfile(session.user.id)
       } else {
         setProfile(null)
