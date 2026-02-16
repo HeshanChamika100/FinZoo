@@ -102,7 +102,7 @@ export default function AdminDashboard() {
     hidden: pets.filter((p) => !p.is_visible).length,
   }
 
-  if (authLoading || !isAuthenticated) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -111,6 +111,10 @@ export default function AdminDashboard() {
         </div>
       </div>
     )
+  }
+
+  if (!isAuthenticated) {
+    return null
   }
 
   return (

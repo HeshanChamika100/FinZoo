@@ -115,9 +115,11 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
             {/* Controls */}
             <div className="flex flex-wrap items-center gap-4 mt-auto pt-3 border-t border-border">
               {/* Stock Toggle */}
-              <button
-                type="button"
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleStock(pet.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleStock(pet.id) } }}
                 className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Switch
@@ -136,12 +138,14 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                     <span className="hidden sm:inline">Sold Out</span>
                   </>
                 )}
-              </button>
+              </div>
 
               {/* Visibility Toggle */}
-              <button
-                type="button"
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleVisibility(pet.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleVisibility(pet.id) } }}
                 className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Switch
@@ -160,7 +164,7 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                     <span className="hidden sm:inline">Hidden</span>
                   </>
                 )}
-              </button>
+              </div>
 
               {/* Edit Button */}
               <Button

@@ -75,46 +75,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    let cancelled = false
-
-    // Get initial session
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-
-        if (cancelled) return
-
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          await fetchProfile(session.user.id)
-        }
-      } catch (error) {
-        console.error("Error initializing auth:", error)
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    initAuth()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (cancelled) return
-
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Set user and mark loading done immediately — don't block on profile fetch
       setUser(session?.user ?? null)
+      setLoading(false)
 
       if (session?.user) {
-        await fetchProfile(session.user.id)
+        // Fire-and-forget: profile loads in the background
+        fetchProfile(session.user.id)
       } else {
         setProfile(null)
       }
     })
 
     return () => {
-      cancelled = true
       subscription.unsubscribe()
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
