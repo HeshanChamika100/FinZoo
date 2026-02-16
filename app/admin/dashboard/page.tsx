@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import {
-  Fish,
   LogOut,
   Search,
   Package,
@@ -124,9 +124,9 @@ export default function AdminDashboard() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <Fish className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-card-foreground">
-                Fin<span className="text-primary">Zoo</span>
+              <Image src="/logo.png" alt="FinZoo Logo" width={40} height={40} />
+              <span className="text-xl font-bold">
+                <span style={{ color: '#196677' }}>Fin</span><span style={{ color: '#c9a97d' }}>Zoo</span>
               </span>
               <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">
                 Admin

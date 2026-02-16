@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { Fish, Menu, X } from "lucide-react"
+import Image from "next/image"
+import { Menu, X } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 
@@ -13,12 +14,15 @@ export function Header() {
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <Fish className="h-8 w-8 text-primary transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <span className="text-2xl font-bold text-foreground">
-              Fin<span className="text-primary">Zoo</span>
+            <Image
+              src="/logo.png"
+              alt="FinZoo Logo"
+              width={40}
+              height={40}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
+            <span className="text-2xl font-bold">
+              <span style={{ color: '#196677' }}>Fin</span><span style={{ color: '#c9a97d' }}>Zoo</span>
             </span>
           </Link>
 
