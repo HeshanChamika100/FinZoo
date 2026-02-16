@@ -7,6 +7,8 @@ import { ArrowLeft, Heart, Share2, Tag, Calendar, Info, Play } from "lucide-reac
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { usePets } from "@/lib/pets-context"
+import { Header } from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
 
 export default function PetDetailPage({
   params,
@@ -27,27 +29,33 @@ export default function PetDetailPage({
 
   if (!pet) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Pet Not Found</h1>
-          <p className="text-muted-foreground mb-4">
-            This pet listing may have been removed or the URL is incorrect.
-          </p>
-          <Link href="/">
-            <Button className="bg-primary text-primary-foreground">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
+      <div className="min-h-screen flex flex-col">
+        <Header variant="white" />
+        <div className="flex-1 flex items-center justify-center bg-background">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Pet Not Found</h1>
+            <p className="text-muted-foreground mb-4">
+              This pet listing may have been removed or the URL is incorrect.
+            </p>
+            <Link href="/">
+              <Button className="bg-primary text-primary-foreground">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
+          </div>
         </div>
+        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-card/80 backdrop-blur-md border-b border-border">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header variant="white" />
+
+      {/* Action bar */}
+      <div className="sticky top-16 z-30 bg-card/80 backdrop-blur-md border-b border-border">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
             <Link
@@ -73,9 +81,9 @@ export default function PetDetailPage({
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Images */}
           <div className="space-y-4">
@@ -229,6 +237,7 @@ export default function PetDetailPage({
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

@@ -8,7 +8,11 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import gsap from "gsap"
 
-export function Header() {
+interface HeaderProps {
+  variant?: 'default' | 'white'
+}
+
+export function Header({ variant = 'default' }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isOverHero, setIsOverHero] = useState(true)
   const router = useRouter()
@@ -49,6 +53,12 @@ export function Header() {
 
   // Detect scroll position to change header style
   useEffect(() => {
+    // Skip scroll detection for white variant
+    if (variant === 'white') {
+      setIsOverHero(false)
+      return
+    }
+
     const handleScroll = () => {
       // Consider hero section as roughly the viewport height
       const heroHeight = window.innerHeight - 100
@@ -58,7 +68,7 @@ export function Header() {
     handleScroll() // Check initial position
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [variant])
 
   const scrollTo = useCallback((id: string) => {
     const doScroll = () => {
@@ -83,9 +93,11 @@ export function Header() {
     <header 
       ref={headerRef} 
       className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
-        isOverHero 
-          ? 'bg-transparent border-transparent' 
-          : 'bg-background/80 backdrop-blur-md border-border'
+        variant === 'white'
+          ? 'bg-white border-border'
+          : isOverHero 
+            ? 'bg-transparent border-transparent' 
+            : 'bg-background/80 backdrop-blur-md border-border'
       }`}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -107,7 +119,7 @@ export function Header() {
             <Link
               href="/shop"
               className={`hover:text-primary transition-colors duration-200 font-medium ${
-                isOverHero ? 'text-white' : 'text-muted-foreground'
+                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
               }`}
             >
               Shop
@@ -115,7 +127,7 @@ export function Header() {
             <button
               onClick={() => scrollTo('featured')}
               className={`hover:text-primary transition-colors duration-200 font-medium ${
-                isOverHero ? 'text-white' : 'text-muted-foreground'
+                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
               }`}
             >
               Featured Pets
@@ -123,7 +135,7 @@ export function Header() {
             <button
               onClick={() => scrollTo('about')}
               className={`hover:text-primary transition-colors duration-200 font-medium ${
-                isOverHero ? 'text-white' : 'text-muted-foreground'
+                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
               }`}
             >
               About Us
@@ -131,7 +143,7 @@ export function Header() {
             <button
               onClick={() => scrollTo('contact')}
               className={`hover:text-primary transition-colors duration-200 font-medium ${
-                isOverHero ? 'text-white' : 'text-muted-foreground'
+                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
               }`}
             >
               Contact
@@ -144,7 +156,9 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className={`md:hidden ${isOverHero ? 'text-white hover:text-white' : ''}`}
+            className={`md:hidden ${
+              variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
+            }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -153,13 +167,13 @@ export function Header() {
 
         {mobileMenuOpen && (
           <div className={`md:hidden py-4 border-t animate-in rounded-xl text-center slide-in-from-top-2 duration-200 ${
-            isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'border-border'
+            variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'border-border'
           }`}>
             <div className="flex flex-col gap-4">
               <Link
                 href="/shop"
                 className={`hover:text-primary transition-colors px-2 py-2 ${
-                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -168,7 +182,7 @@ export function Header() {
               <button
                 onClick={() => scrollTo('featured')}
                 className={`hover:text-primary transition-colors px-2 py-2 text-center ${
-                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
               >
                 Featured Pets
@@ -176,7 +190,7 @@ export function Header() {
               <button
                 onClick={() => scrollTo('about')}
                 className={`hover:text-primary transition-colors px-2 py-2 text-center ${
-                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
               >
                 About Us
@@ -184,7 +198,7 @@ export function Header() {
               <button
                 onClick={() => scrollTo('contact')}
                 className={`hover:text-primary transition-colors px-2 py-2 text-center ${
-                  isOverHero ? 'text-white' : 'text-muted-foreground'
+                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
               >
                 Contact
