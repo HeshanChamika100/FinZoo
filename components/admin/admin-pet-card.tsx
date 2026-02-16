@@ -1,28 +1,52 @@
 "use client"
 
 import Image from "next/image"
-import { Eye, EyeOff, QrCode, Package, PackageX } from "lucide-react"
+import { Eye, EyeOff, QrCode, Package, PackageX, Pencil, Trash2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import type { Pet } from "@/lib/pets-data"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import type { Pet } from "@/lib/pets-context"
 import { usePets } from "@/lib/pets-context"
 import { useState } from "react"
 
 interface AdminPetCardProps {
   pet: Pet
   onGenerateQR: (pet: Pet) => void
+  onEdit: (pet: Pet) => void
 }
 
-export function AdminPetCard({ pet, onGenerateQR }: AdminPetCardProps) {
-  const { toggleStock, toggleVisibility } = usePets()
+export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
+  const { toggleStock, toggleVisibility, deletePet } = usePets()
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    try {
+      await deletePet(pet.id)
+    } catch (error) {
+      console.error("Failed to delete pet:", error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   return (
     <Card
-      className={`overflow-hidden transition-all duration-300 ${!pet.isVisible ? "opacity-60" : ""} ${!pet.inStock ? "border-destructive/30" : "border-border"}`}
+      className={`overflow-hidden transition-all duration-300 ${!pet.is_visible ? "opacity-60" : ""} ${!pet.in_stock ? "border-destructive/30" : "border-border"}`}
     >
       <div className="flex flex-col sm:flex-row">
         {/* Image */}
@@ -39,7 +63,7 @@ export function AdminPetCard({ pet, onGenerateQR }: AdminPetCardProps) {
           )}
           
           {/* Status overlay */}
-          {!pet.isVisible && (
+          {!pet.is_visible && (
             <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
               <EyeOff className="h-8 w-8 text-background" />
             </div>
@@ -66,10 +90,10 @@ export function AdminPetCard({ pet, onGenerateQR }: AdminPetCardProps) {
                     </Badge>
                   )}
                   <Badge
-                    variant={pet.inStock ? "default" : "destructive"}
-                    className={`text-xs ${pet.inStock ? "bg-primary text-primary-foreground" : ""}`}
+                    variant={pet.in_stock ? "default" : "destructive"}
+                    className={`text-xs ${pet.in_stock ? "bg-primary text-primary-foreground" : ""}`}
                   >
-                    {pet.inStock ? "In Stock" : "Sold Out"}
+                    {pet.in_stock ? "In Stock" : "Sold Out"}
                   </Badge>
                 </div>
               </div>
@@ -81,14 +105,14 @@ export function AdminPetCard({ pet, onGenerateQR }: AdminPetCardProps) {
               <div className="flex items-center gap-2">
                 <Switch
                   id={`stock-${pet.id}`}
-                  checked={pet.inStock}
+                  checked={pet.in_stock}
                   onCheckedChange={() => toggleStock(pet.id)}
                 />
                 <Label
                   htmlFor={`stock-${pet.id}`}
                   className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1"
                 >
-                  {pet.inStock ? (
+                  {pet.in_stock ? (
                     <>
                       <Package className="h-3.5 w-3.5" />
                       <span className="hidden sm:inline">In Stock</span>
@@ -106,14 +130,14 @@ export function AdminPetCard({ pet, onGenerateQR }: AdminPetCardProps) {
               <div className="flex items-center gap-2">
                 <Switch
                   id={`visibility-${pet.id}`}
-                  checked={pet.isVisible}
+                  checked={pet.is_visible}
                   onCheckedChange={() => toggleVisibility(pet.id)}
                 />
                 <Label
                   htmlFor={`visibility-${pet.id}`}
                   className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1"
                 >
-                  {pet.isVisible ? (
+                  {pet.is_visible ? (
                     <>
                       <Eye className="h-3.5 w-3.5" />
                       <span className="hidden sm:inline">Visible</span>
@@ -127,16 +151,59 @@ export function AdminPetCard({ pet, onGenerateQR }: AdminPetCardProps) {
                 </Label>
               </div>
 
+              {/* Edit Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onEdit(pet)}
+                className="ml-auto border-border hover:border-primary/50 hover:bg-primary/5"
+              >
+                <Pencil className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Edit</span>
+              </Button>
+
               {/* QR Button */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onGenerateQR(pet)}
-                className="ml-auto border-border hover:border-primary/50 hover:bg-primary/5"
+                className="border-border hover:border-primary/50 hover:bg-primary/5"
               >
                 <QrCode className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Generate</span> QR
               </Button>
+
+              {/* Delete Button */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isDeleting}
+                    className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    <span className="hidden sm:inline">{isDeleting ? "Deleting..." : "Delete"}</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete {pet.name}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete {pet.name} from your inventory.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </CardContent>

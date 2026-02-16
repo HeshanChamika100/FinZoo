@@ -1,14 +1,14 @@
 "use client"
 
 import React from "react"
-
-import { useState } from "react"
-import { X, Plus, ImageIcon } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Pencil, ImageIcon, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import { ImageUpload, uploadPetImage } from "@/components/admin/image-upload"
 import {
   Dialog,
   DialogContent,
@@ -22,10 +22,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePets } from "@/lib/pets-context"
-import { ImageUpload, uploadPetImage } from "@/components/admin/image-upload"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { usePets, type Pet } from "@/lib/pets-context"
 
-interface AddPetModalProps {
+interface EditPetModalProps {
+  pet: Pet | null
   isOpen: boolean
   onClose: () => void
 }
@@ -45,9 +56,10 @@ const speciesOptions = [
   "Other",
 ]
 
-export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
-  const { addPet } = usePets()
+export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
+  const { updatePet, deletePet } = usePets()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [pendingImage, setPendingImage] = useState<File | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
@@ -66,6 +78,28 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Populate form when pet changes
+  useEffect(() => {
+    if (pet) {
+      setFormData({
+        name: pet.name,
+        species: pet.species,
+        breed: pet.breed,
+        age: pet.age,
+        price: String(pet.price),
+        image: pet.image || "",
+        description: pet.description || "",
+        in_stock: pet.in_stock,
+        is_visible: pet.is_visible,
+        featured: pet.featured,
+      })
+      setErrors({})
+      setSubmitError(null)
+      setPendingImage(null)
+      setImageError(null)
+    }
+  }, [pet])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -96,9 +130,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!validateForm()) {
-      return
-    }
+    if (!validateForm() || !pet) return
 
     setIsSubmitting(true)
     setSubmitError(null)
@@ -117,7 +149,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         }
       }
 
-      await addPet({
+      await updatePet(pet.id, {
         name: formData.name.trim(),
         species: formData.species,
         breed: formData.breed.trim(),
@@ -130,66 +162,58 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         featured: formData.featured,
       })
 
-      // Reset form on success
-      setFormData({
-        name: "",
-        species: "",
-        breed: "",
-        age: "",
-        price: "",
-        image: "",
-        description: "",
-        in_stock: true,
-        is_visible: true,
-        featured: false,
-      })
-      setPendingImage(null)
-      setErrors({})
       onClose()
     } catch (error: any) {
-      console.error("Failed to add pet:", error)
-      setSubmitError(error.message || "Failed to add pet. Please try again.")
+      console.error("Failed to update pet:", error)
+      setSubmitError(error.message || "Failed to update pet. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handleDelete = async () => {
+    if (!pet) return
+
+    setIsDeleting(true)
+    setSubmitError(null)
+
+    try {
+      await deletePet(pet.id)
+      onClose()
+    } catch (error: any) {
+      console.error("Failed to delete pet:", error)
+      setSubmitError(error.message || "Failed to delete pet. Please try again.")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   const handleClose = () => {
-    setFormData({
-      name: "",
-      species: "",
-      breed: "",
-      age: "",
-      price: "",
-      image: "",
-      description: "",
-      in_stock: true,
-      is_visible: true,
-      featured: false,
-    })
-    setPendingImage(null)
     setErrors({})
     setSubmitError(null)
+    setPendingImage(null)
     setImageError(null)
     onClose()
   }
+
+  if (!pet) return null
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-card-foreground">
-            <Plus className="h-5 w-5 text-primary" />
-            Add New Pet
+            <Pencil className="h-5 w-5 text-primary" />
+            Edit Pet
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-foreground">Pet Name *</Label>
+            <Label htmlFor="edit-name" className="text-foreground">Pet Name *</Label>
             <Input
-              id="name"
+              id="edit-name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Max, Whiskers, Goldie"
@@ -201,7 +225,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
           {/* Species and Breed */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="species" className="text-foreground">Species *</Label>
+              <Label htmlFor="edit-species" className="text-foreground">Species *</Label>
               <Select
                 value={formData.species}
                 onValueChange={(value) => setFormData({ ...formData, species: value })}
@@ -221,9 +245,9 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="breed" className="text-foreground">Breed *</Label>
+              <Label htmlFor="edit-breed" className="text-foreground">Breed *</Label>
               <Input
-                id="breed"
+                id="edit-breed"
                 value={formData.breed}
                 onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
                 placeholder="e.g., Golden Retriever"
@@ -236,9 +260,9 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
           {/* Age and Price */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="age" className="text-foreground">Age *</Label>
+              <Label htmlFor="edit-age" className="text-foreground">Age *</Label>
               <Input
-                id="age"
+                id="edit-age"
                 value={formData.age}
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                 placeholder="e.g., 2 years, 6 months"
@@ -248,9 +272,9 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price" className="text-foreground">Price ($) *</Label>
+              <Label htmlFor="edit-price" className="text-foreground">Price ($) *</Label>
               <Input
-                id="price"
+                id="edit-price"
                 type="number"
                 min="0"
                 step="0.01"
@@ -278,16 +302,16 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                 setFormData({ ...formData, image: "" })
                 setPendingImage(null)
               }}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isDeleting}
               error={imageError}
             />
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-foreground">Description *</Label>
+            <Label htmlFor="edit-description" className="text-foreground">Description *</Label>
             <Textarea
-              id="description"
+              id="edit-description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe this pet's personality, traits, and any special needs..."
@@ -308,11 +332,11 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="in_stock" className="text-foreground">In Stock</Label>
+                <Label htmlFor="edit-in_stock" className="text-foreground">In Stock</Label>
                 <p className="text-xs text-muted-foreground">Pet is available for purchase</p>
               </div>
               <Switch
-                id="in_stock"
+                id="edit-in_stock"
                 checked={formData.in_stock}
                 onCheckedChange={(checked) => setFormData({ ...formData, in_stock: checked })}
               />
@@ -320,11 +344,11 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="is_visible" className="text-foreground">Visible on Website</Label>
+                <Label htmlFor="edit-is_visible" className="text-foreground">Visible on Website</Label>
                 <p className="text-xs text-muted-foreground">Show this pet on the public site</p>
               </div>
               <Switch
-                id="is_visible"
+                id="edit-is_visible"
                 checked={formData.is_visible}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_visible: checked })}
               />
@@ -332,11 +356,11 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="featured" className="text-foreground">Featured</Label>
+                <Label htmlFor="edit-featured" className="text-foreground">Featured</Label>
                 <p className="text-xs text-muted-foreground">Highlight in the featured section</p>
               </div>
               <Switch
-                id="featured"
+                id="edit-featured"
                 checked={formData.featured}
                 onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
               />
@@ -345,6 +369,38 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">
+            {/* Delete Button */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={isDeleting || isSubmitting}
+                  className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive shrink-0"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete {pet.name}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete {pet.name} from your inventory.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Button
               type="button"
               variant="outline"
@@ -355,18 +411,18 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isDeleting}
               className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  Adding...
+                  Saving...
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Pet
+                  <Pencil className="h-4 w-4" />
+                  Save Changes
                 </span>
               )}
             </Button>

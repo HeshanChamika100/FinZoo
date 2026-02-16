@@ -8,7 +8,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export function FeaturedPets() {
-  const { pets } = usePets()
+  const { pets, loading } = usePets()
   const [filter, setFilter] = useState<string>("all")
   const [isVisible, setIsVisible] = useState(false)
 
@@ -28,7 +28,7 @@ export function FeaturedPets() {
     return () => observer.disconnect()
   }, [])
 
-  const visiblePets = pets.filter((pet) => pet.isVisible)
+  const visiblePets = pets.filter((pet) => pet.is_visible)
   const filteredPets =
     filter === "all"
       ? visiblePets
@@ -86,9 +86,25 @@ export function FeaturedPets() {
         <div
           className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12 transition-all duration-700 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          {filteredPets.map((pet, index) => (
-            <PetCard key={pet.id} pet={pet} index={index} />
-          ))}
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-border bg-card animate-pulse"
+              >
+                <div className="aspect-square bg-muted rounded-t-xl" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-muted rounded w-2/3" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                  <div className="h-3 bg-muted rounded w-1/3" />
+                </div>
+              </div>
+            ))
+          ) : (
+            filteredPets.map((pet, index) => (
+              <PetCard key={pet.id} pet={pet} index={index} />
+            ))
+          )}
         </div>
 
         {/* View all button */}

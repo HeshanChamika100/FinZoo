@@ -1,0 +1,90 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export interface Database {
+  public: {
+    Tables: {
+      pets: {
+        Row: {
+          id: string
+          name: string
+          species: string
+          breed: string
+          age: string
+          price: number
+          image: string | null
+          description: string | null
+          in_stock: boolean
+          is_visible: boolean
+          featured: boolean
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          species: string
+          breed: string
+          age: string
+          price: number
+          image?: string | null
+          description?: string | null
+          in_stock?: boolean
+          is_visible?: boolean
+          featured?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          species?: string
+          breed?: string
+          age?: string
+          price?: number
+          image?: string | null
+          description?: string | null
+          in_stock?: boolean
+          is_visible?: boolean
+          featured?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+      }
+      profiles: {
+        Row: {
+          id: string
+          email: string
+          name: string | null
+          role: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          email: string
+          name?: string | null
+          role?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          name?: string | null
+          role?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+    }
+  }
+}

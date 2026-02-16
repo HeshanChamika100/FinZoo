@@ -6,7 +6,7 @@ import { Heart, Tag } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { Pet } from "@/lib/pets-data"
+import type { Pet } from "@/lib/pets-context"
 import { useState } from "react"
 
 interface PetCardProps {
@@ -57,7 +57,7 @@ export function PetCard({ pet, index }: PetCardProps) {
               Featured
             </Badge>
           )}
-          {!pet.inStock && (
+          {!pet.in_stock && (
             <Badge variant="secondary" className="bg-destructive/90 text-destructive-foreground">
               Sold Out
             </Badge>
@@ -66,7 +66,7 @@ export function PetCard({ pet, index }: PetCardProps) {
 
         {/* Quick view on hover */}
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          {pet.inStock ? (
+          {pet.in_stock ? (
             <Button
               asChild
               className="w-full bg-card text-card-foreground hover:bg-card/90"

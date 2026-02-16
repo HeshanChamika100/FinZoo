@@ -3,7 +3,7 @@
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
 import { PetCard } from "@/components/landing/pet-card"
-import { initialPets } from "@/lib/pets-data"
+import { usePets } from "@/lib/pets-context"
 import { motion } from "framer-motion"
 import { ShopFilters } from "@/components/shop/shop-filters"
 import { useState, useMemo } from "react"
@@ -12,14 +12,16 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export default function ShopPage() {
+   const { pets, loading } = usePets()
+   
    // Derive unique categories and price range from data
    const categories = useMemo(() => {
-      return Array.from(new Set(initialPets.map((pet) => pet.species))).sort()
-   }, [])
+      return Array.from(new Set(pets.map((pet) => pet.species))).sort()
+   }, [pets])
 
    const maxPriceData = useMemo(() => {
-      return Math.max(...initialPets.map((pet) => pet.price))
-   }, [])
+      return pets.length > 0 ? Math.max(...pets.map((pet) => pet.price)) : 1000
+   }, [pets])
 
    // Round up max price to nex 100 or 1000 for nicer UI
    const maxPriceLimit = Math.ceil(maxPriceData / 100) * 100
@@ -29,13 +31,25 @@ export default function ShopPage() {
 
    // Filter logic
    const filteredPets = useMemo(() => {
-      return initialPets.filter((pet) => {
+      return pets.filter((pet) => {
          const matchesCategory =
             selectedCategories.length === 0 || selectedCategories.includes(pet.species)
          const matchesPrice = pet.price >= priceRange[0] && pet.price <= priceRange[1]
          return matchesCategory && matchesPrice
       })
-   }, [priceRange, selectedCategories])
+   }, [pets, priceRange, selectedCategories])
+
+   if (loading) {
+      return (
+         <div className="min-h-screen flex flex-col bg-background">
+            <Header />
+            <main className="flex-1 pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex items-center justify-center">
+               <p className="text-muted-foreground">Loading pets...</p>
+            </main>
+            <Footer />
+         </div>
+      )
+   }
 
    return (
       <div className="min-h-screen flex flex-col bg-background">
