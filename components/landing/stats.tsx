@@ -72,6 +72,7 @@ export function Stats() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       className="py-20 bg-primary text-primary-foreground"
     >

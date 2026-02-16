@@ -2,12 +2,35 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter, usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const scrollTo = useCallback((id: string) => {
+    const doScroll = () => {
+      const el = document.getElementById(id)
+      if (el) {
+        const headerOffset = 80
+        const top = el.getBoundingClientRect().top + window.scrollY - headerOffset
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
+    }
+
+    if (pathname !== '/') {
+      router.push(`/#${id}`)
+      // Wait for navigation then scroll
+      setTimeout(doScroll, 500)
+    } else {
+      doScroll()
+    }
+    setMobileMenuOpen(false)
+  }, [pathname, router])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -33,24 +56,24 @@ export function Header() {
             >
               Shop
             </Link>
-            <Link
-              href="#featured"
+            <button
+              onClick={() => scrollTo('featured')}
               className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
               Featured Pets
-            </Link>
-            <Link
-              href="#about"
+            </button>
+            <button
+              onClick={() => scrollTo('about')}
               className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
               About Us
-            </Link>
-            <Link
-              href="#contact"
+            </button>
+            <button
+              onClick={() => scrollTo('contact')}
               className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
               Contact
-            </Link>
+            </button>
             <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25">
               <Link href="/shop">Browse All</Link>
             </Button>
@@ -76,27 +99,24 @@ export function Header() {
               >
                 Shop
               </Link>
-              <Link
-                href="#featured"
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2"
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                onClick={() => scrollTo('featured')}
+                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2 text-left"
               >
                 Featured Pets
-              </Link>
-              <Link
-                href="#about"
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2"
-                onClick={() => setMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollTo('about')}
+                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2 text-left"
               >
                 About Us
-              </Link>
-              <Link
-                href="#contact"
-                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2"
-                onClick={() => setMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollTo('contact')}
+                className="text-muted-foreground hover:text-primary transition-colors px-2 py-2 text-left"
               >
                 Contact
-              </Link>
+              </button>
               <Button asChild className="bg-primary text-primary-foreground w-full">
                 <Link href="/shop" onClick={() => setMobileMenuOpen(false)}>
                   Browse All
