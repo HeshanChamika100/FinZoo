@@ -23,15 +23,6 @@ const services = [
     border: "border-blue-500/20",
   },
   {
-    icon: Stethoscope,
-    title: "Veterinary Checkups",
-    description:
-      "Every pet comes with a certified health report and vaccination records from licensed vets.",
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/20",
-  },
-  {
     icon: ShieldCheck,
     title: "Health Guarantee",
     description:
@@ -48,15 +39,6 @@ const services = [
     color: "text-rose-500",
     bg: "bg-rose-500/10",
     border: "border-rose-500/20",
-  },
-  {
-    icon: Scissors,
-    title: "Grooming & Care",
-    description:
-      "Professional grooming packages and care kits to keep your new friend looking their best.",
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/20",
   },
   {
     icon: Phone,
@@ -102,20 +84,22 @@ export function Services() {
               tl.fromTo(
                 cardsRef.current.children,
                 {
-                  y: 80,
+                  y: 100,
                   opacity: 0,
-                  rotateY: -20,
-                  scale: 0.85,
+                  rotateY: -30,
+                  rotateX: 20,
+                  scale: 0.7,
                   transformPerspective: 1000,
                 },
                 {
                   y: 0,
                   opacity: 1,
                   rotateY: 0,
+                  rotateX: 0,
                   scale: 1,
-                  duration: 0.7,
-                  stagger: 0.1,
-                  ease: "back.out(1.4)",
+                  duration: 0.9,
+                  stagger: 0.12,
+                  ease: "back.out(1.7)",
                 },
                 0.4
               )
@@ -192,12 +176,13 @@ export function Services() {
     const x = (e.clientX - rect.left) / rect.width - 0.5
     const y = (e.clientY - rect.top) / rect.height - 0.5
     gsap.to(el, {
-      rotateY: x * 12,
-      rotateX: -y * 12,
-      scale: 1.04,
-      duration: 0.35,
-      ease: "power2.out",
+      rotateY: x * 20,
+      rotateX: -y * 20,
+      scale: 1.08,
+      duration: 0.0,
+      ease: "power1.out",
       transformPerspective: 600,
+      overwrite: true,
     })
   }
 
@@ -206,8 +191,9 @@ export function Services() {
       rotateY: 0,
       rotateX: 0,
       scale: 1,
-      duration: 0.6,
+      duration: 0.4,
       ease: "elastic.out(1, 0.5)",
+      overwrite: true,
     })
   }
 
@@ -215,7 +201,7 @@ export function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="py-24 bg-gradient-to-b from-muted/30 to-background"
+      className="py-24 backdrop-blur-3xl bg-linear-to-b from-primary/30 to-background overflow-hidden"
       style={{ perspective: "1200px" }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -226,7 +212,7 @@ export function Services() {
           style={{ transformStyle: "preserve-3d" }}
         >
           <span
-            className="inline-block px-4 py-1.5 rounded-full bg-[#c9a97d]/15 text-[#c9a97d] text-sm font-medium mb-4"
+            className="inline-block px-4 py-1.5 rounded-full bg-blue-300/25 text-blue-900 text-sm font-medium mb-4"
             style={{ opacity: 0 }}
           >
             What We Offer
@@ -252,14 +238,14 @@ export function Services() {
         {/* Services grid */}
         <div
           ref={cardsRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
         >
           {services.map((service, i) => (
             <div
               key={i}
               onMouseMove={handleTilt}
               onMouseLeave={handleLeave}
-              className={`group relative rounded-xl border ${service.border} bg-white/50 dark:bg-white/5 backdrop-blur-md p-5 cursor-pointer transition-shadow duration-300 hover:shadow-lg`}
+              className={`group relative rounded-2xl border-2 ${service.border} bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 backdrop-blur-lg p-6 cursor-pointer transition-all duration-150 hover:shadow-2xl`}
               style={{
                 opacity: 0,
                 transformStyle: "preserve-3d",
@@ -268,23 +254,38 @@ export function Services() {
             >
               {/* Icon */}
               <div
-                className={`inline-flex items-center justify-center w-10 h-10 rounded-lg ${service.bg} mb-3 transition-transform duration-300 group-hover:scale-110`}
+                className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${service.bg} mb-4 transition-all duration-200 group-hover:scale-125 group-hover:rotate-6 group-hover:shadow-xl`}
               >
-                <service.icon className={`h-5 w-5 ${service.color}`} />
+                <service.icon className={`h-7 w-7 ${service.color} transition-all duration-200 group-hover:scale-110 group-hover:drop-shadow-lg`} />
               </div>
 
               {/* Content */}
-              <h3 className="text-base font-semibold text-foreground mb-1.5">
+              <h3 className={`text-lg font-bold text-foreground mb-2 transition-all duration-200 group-hover:${service.color}`}>
                 {service.title}
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-200">
                 {service.description}
               </p>
 
-              {/* Subtle corner glow on hover */}
+              {/* Animated gradient overlay on hover */}
               <div
-                className={`absolute -top-px -right-px w-16 h-16 ${service.bg} rounded-bl-[100%] rounded-tr-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl`}
+                className={`absolute inset-0 ${service.bg} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none`}
               />
+
+              {/* Corner glow effect - stronger */}
+              <div
+                className={`absolute -top-1 -right-1 w-32 h-32 ${service.bg} rounded-bl-[100%] rounded-tr-2xl opacity-0 group-hover:opacity-80 transition-all duration-300 blur-2xl animate-pulse`}
+              />
+
+              {/* Pulsing border effect */}
+              <div
+                className={`absolute inset-0 rounded-2xl border-2 ${service.border} opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none animate-pulse`}
+              />
+
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none overflow-hidden rounded-2xl">
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
+              </div>
             </div>
           ))}
         </div>
@@ -333,6 +334,34 @@ export function Services() {
 
         </div>{/* end two-column */}
       </div>
+
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        .group:hover {
+          animation: none;
+        }
+        .group {
+          animation: float 4s ease-in-out infinite;
+        }
+        .group:nth-child(2) {
+          animation-delay: 0.5s;
+        }
+        .group:nth-child(3) {
+          animation-delay: 1s;
+        }
+        .group:nth-child(4) {
+          animation-delay: 1.5s;
+        }
+        .group:nth-child(5) {
+          animation-delay: 2s;
+        }
+        .group:nth-child(6) {
+          animation-delay: 2.5s;
+        }
+      `}</style>
     </section>
   )
 }
