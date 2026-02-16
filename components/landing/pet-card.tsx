@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Tag } from "lucide-react"
+import { Heart, Tag, Video, Images } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,8 @@ export function PetCard({ pet, index }: PetCardProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
+  const coverImage = pet.images?.[0] || pet.image || "/placeholder.svg"
+
   return (
     <Card
       className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2"
@@ -27,7 +29,7 @@ export function PetCard({ pet, index }: PetCardProps) {
     >
       <div className="relative overflow-hidden aspect-[4/3]">
         <Image
-          src={pet.image || "/placeholder.svg"}
+          src={coverImage}
           alt={pet.name}
           fill
           className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
@@ -60,6 +62,18 @@ export function PetCard({ pet, index }: PetCardProps) {
           {!pet.in_stock && (
             <Badge variant="secondary" className="bg-destructive/90 text-destructive-foreground">
               Sold Out
+            </Badge>
+          )}
+          {pet.video && (
+            <Badge variant="secondary" className="bg-background/80 text-foreground">
+              <Video className="h-3 w-3 mr-1" />
+              Video
+            </Badge>
+          )}
+          {pet.images && pet.images.length > 1 && (
+            <Badge variant="secondary" className="bg-background/80 text-foreground">
+              <Images className="h-3 w-3 mr-1" />
+              {pet.images.length}
             </Badge>
           )}
         </div>

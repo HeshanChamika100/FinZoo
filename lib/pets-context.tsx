@@ -13,6 +13,8 @@ export interface Pet {
   age: string
   price: number
   image: string | null
+  images: string[]
+  video: string | null
   description: string | null
   in_stock: boolean
   is_visible: boolean

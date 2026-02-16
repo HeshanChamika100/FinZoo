@@ -1,12 +1,11 @@
 "use client"
 
 import Image from "next/image"
-import { Eye, EyeOff, QrCode, Package, PackageX, Pencil, Trash2 } from "lucide-react"
+import { Eye, EyeOff, QrCode, Package, PackageX, Pencil, Trash2, Video, Images } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +43,8 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
     }
   }
 
+  const coverImage = pet.images?.[0] || pet.image || "/placeholder.svg"
+
   return (
     <Card
       className={`overflow-hidden transition-all duration-300 ${!pet.is_visible ? "opacity-60" : ""} ${!pet.in_stock ? "border-destructive/30" : "border-border"}`}
@@ -52,7 +53,7 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
         {/* Image */}
         <div className="relative w-full sm:w-40 h-32 sm:h-auto shrink-0">
           <Image
-            src={pet.image || "/placeholder.svg"}
+            src={coverImage}
             alt={pet.name}
             fill
             className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
@@ -89,6 +90,18 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                       Featured
                     </Badge>
                   )}
+                  {pet.video && (
+                    <Badge variant="secondary" className="text-xs">
+                      <Video className="h-3 w-3 mr-1" />
+                      Video
+                    </Badge>
+                  )}
+                  {pet.images && pet.images.length > 1 && (
+                    <Badge variant="secondary" className="text-xs">
+                      <Images className="h-3 w-3 mr-1" />
+                      {pet.images.length}
+                    </Badge>
+                  )}
                   <Badge
                     variant={pet.in_stock ? "default" : "destructive"}
                     className={`text-xs ${pet.in_stock ? "bg-primary text-primary-foreground" : ""}`}
@@ -104,13 +117,12 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
               {/* Stock Toggle */}
               <div className="flex items-center gap-2">
                 <Switch
-                  id={`stock-${pet.id}`}
                   checked={pet.in_stock}
-                  onCheckedChange={() => toggleStock(pet.id)}
+                  onCheckedChange={() => toggleStock(pet.id)} className="hover:cursor-pointer"
                 />
-                <Label
-                  htmlFor={`stock-${pet.id}`}
-                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1"
+                <span
+                  onClick={() => toggleStock(pet.id)}
+                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1 select-none"
                 >
                   {pet.in_stock ? (
                     <>
@@ -123,19 +135,18 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                       <span className="hidden sm:inline">Sold Out</span>
                     </>
                   )}
-                </Label>
+                </span>
               </div>
 
               {/* Visibility Toggle */}
               <div className="flex items-center gap-2">
                 <Switch
-                  id={`visibility-${pet.id}`}
                   checked={pet.is_visible}
-                  onCheckedChange={() => toggleVisibility(pet.id)}
+                  onCheckedChange={() => toggleVisibility(pet.id)} className="cursor-pointer"
                 />
-                <Label
-                  htmlFor={`visibility-${pet.id}`}
-                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1"
+                <span
+                  onClick={() => toggleVisibility(pet.id)}
+                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1 select-none"
                 >
                   {pet.is_visible ? (
                     <>
@@ -148,7 +159,7 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                       <span className="hidden sm:inline">Hidden</span>
                     </>
                   )}
-                </Label>
+                </span>
               </div>
 
               {/* Edit Button */}

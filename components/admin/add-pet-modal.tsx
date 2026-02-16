@@ -3,7 +3,7 @@
 import React from "react"
 
 import { useState } from "react"
-import { X, Plus, ImageIcon } from "lucide-react"
+import { X, Plus, ImageIcon, Video } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,7 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { usePets } from "@/lib/pets-context"
-import { ImageUpload, uploadPetImage } from "@/components/admin/image-upload"
+import { uploadPetImage } from "@/components/admin/image-upload"
+import { MultiImageUpload } from "@/components/admin/multi-image-upload"
+import { VideoUpload, uploadPetVideo } from "@/components/admin/video-upload"
 
 interface AddPetModalProps {
   isOpen: boolean
@@ -49,8 +51,11 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const { addPet } = usePets()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [pendingImage, setPendingImage] = useState<File | null>(null)
+  const [pendingImageFiles, setPendingImageFiles] = useState<File[]>([])
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([])
   const [imageError, setImageError] = useState<string | null>(null)
+  const [pendingVideo, setPendingVideo] = useState<File | null>(null)
+  const [videoError, setVideoError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -59,6 +64,8 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     age: "",
     price: "",
     image: "",
+    images: [] as string[],
+    video: "",
     description: "",
     in_stock: true,
     is_visible: true,
@@ -103,15 +110,35 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     setIsSubmitting(true)
     setSubmitError(null)
     setImageError(null)
+    setVideoError(null)
 
     try {
-      // Upload image first if there's a pending file
-      let imageUrl: string | null = formData.image || null
-      if (pendingImage) {
+      // Upload all pending image files
+      const uploadedImageUrls: string[] = [...existingImageUrls]
+      if (pendingImageFiles.length > 0) {
         try {
-          imageUrl = await uploadPetImage(pendingImage)
+          const uploads = await Promise.all(
+            pendingImageFiles.map(file => uploadPetImage(file))
+          )
+          uploadedImageUrls.push(...uploads)
         } catch (err: any) {
-          setImageError(err.message || "Failed to upload image")
+          setImageError(err.message || "Failed to upload images")
+          setIsSubmitting(false)
+          return
+        }
+      }
+
+      // First image is the cover
+      const coverImage = uploadedImageUrls[0] || null
+      const additionalImages = uploadedImageUrls
+
+      // Upload video if there's a pending file
+      let videoUrl: string | null = formData.video || null
+      if (pendingVideo) {
+        try {
+          videoUrl = await uploadPetVideo(pendingVideo)
+        } catch (err: any) {
+          setVideoError(err.message || "Failed to upload video")
           setIsSubmitting(false)
           return
         }
@@ -123,7 +150,9 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         breed: formData.breed.trim(),
         age: formData.age.trim(),
         price: Number(formData.price),
-        image: imageUrl,
+        image: coverImage,
+        images: additionalImages,
+        video: videoUrl,
         description: formData.description.trim(),
         in_stock: formData.in_stock,
         is_visible: formData.is_visible,
@@ -138,12 +167,16 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         age: "",
         price: "",
         image: "",
+        images: [],
+        video: "",
         description: "",
         in_stock: true,
         is_visible: true,
         featured: false,
       })
-      setPendingImage(null)
+      setPendingImageFiles([])
+      setExistingImageUrls([])
+      setPendingVideo(null)
       setErrors({})
       onClose()
     } catch (error: any) {
@@ -162,15 +195,20 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       age: "",
       price: "",
       image: "",
+      images: [],
+      video: "",
       description: "",
       in_stock: true,
       is_visible: true,
       featured: false,
     })
-    setPendingImage(null)
+    setPendingImageFiles([])
+    setExistingImageUrls([])
+    setPendingVideo(null)
     setErrors({})
     setSubmitError(null)
     setImageError(null)
+    setVideoError(null)
     onClose()
   }
 
@@ -268,18 +306,38 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             <Label className="text-foreground">
               <span className="flex items-center gap-2">
                 <ImageIcon className="h-4 w-4" />
-                Pet Image
+                Pet Images
               </span>
             </Label>
-            <ImageUpload
-              value={formData.image}
-              onFileChange={(file) => setPendingImage(file)}
-              onRemove={() => {
-                setFormData({ ...formData, image: "" })
-                setPendingImage(null)
+            <p className="text-xs text-muted-foreground">First image will be the cover photo. You can add multiple images.</p>
+            <MultiImageUpload
+              existingImages={existingImageUrls}
+              onChange={({ existingImages, pendingFiles }) => {
+                setExistingImageUrls(existingImages)
+                setPendingImageFiles(pendingFiles)
               }}
               disabled={isSubmitting}
               error={imageError}
+            />
+          </div>
+
+          {/* Video Upload */}
+          <div className="space-y-2">
+            <Label className="text-foreground">
+              <span className="flex items-center gap-2">
+                <Video className="h-4 w-4" />
+                Pet Video
+              </span>
+            </Label>
+            <VideoUpload
+              value={formData.video}
+              onFileChange={(file) => setPendingVideo(file)}
+              onRemove={() => {
+                setFormData({ ...formData, video: "" })
+                setPendingVideo(null)
+              }}
+              disabled={isSubmitting}
+              error={videoError}
             />
           </div>
 
