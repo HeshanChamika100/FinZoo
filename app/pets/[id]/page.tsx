@@ -3,18 +3,20 @@
 import { use, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Heart, Share2, Tag, Calendar, Info, Play } from "lucide-react"
+import { ArrowLeft, Heart, Share2, Tag, Calendar, Info, Play, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { usePets } from "@/lib/pets-context"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
+import { useRouter } from "next/navigation"
 
 export default function PetDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
+  const router = useRouter()
   const { id } = use(params)
   const { getPetById } = usePets()
   const pet = getPetById(id)
@@ -54,17 +56,21 @@ export default function PetDetailPage({
     <div className="min-h-screen bg-background flex flex-col">
       <Header variant="white" />
 
+      {/* Spacer for fixed header */}
+      <div className="h-12" />
+
       {/* Action bar */}
       <div className="sticky top-16 z-30 bg-card/80 backdrop-blur-md border-b border-border">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none p-0"
             >
               <ArrowLeft className="h-4 w-4" />
               Back
-            </Link>
+            </button>
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -219,8 +225,10 @@ export default function PetDetailPage({
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2"
                   >
-                    Inquire Now
+                    <MessageCircle className="h-5 w-5 text-primary-foreground" />
+                    Inquire Now Via Whatsapp
                   </a>
                 ) : (
                   "Notify When Available"

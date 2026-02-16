@@ -53,7 +53,7 @@ export default function ShopPage() {
 
    return (
       <div className="min-h-screen flex flex-col bg-background">
-         <Header />
+         <Header variant="white" />
          <main className="flex-1 pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
             <div className="space-y-8">
                <div className="text-center space-y-4">
