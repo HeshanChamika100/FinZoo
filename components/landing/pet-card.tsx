@@ -21,12 +21,13 @@ export function PetCard({ pet, index }: PetCardProps) {
   const coverImage = pet.images?.[0] || pet.image || "/placeholder.svg"
 
   return (
-    <Card
-      className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2"
-      style={{
-        animationDelay: `${index * 100}ms`,
-      }}
-    >
+    <Link href={`/pets/${pet.id}`} className="block">
+      <Card
+        className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 cursor-pointer"
+        style={{
+          animationDelay: `${index * 100}ms`,
+        }}
+      >
       <div className="relative overflow-hidden aspect-[4/3]">
         <Image
           src={coverImage}
@@ -44,8 +45,12 @@ export function PetCard({ pet, index }: PetCardProps) {
 
         {/* Like button */}
         <button
-          onClick={() => setIsLiked(!isLiked)}
-          className="absolute top-3 right-3 p-2 rounded-full bg-card/80 backdrop-blur-sm hover:bg-card transition-all duration-200 hover:scale-110"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setIsLiked(!isLiked)
+          }}
+          className="absolute top-3 right-3 p-2 rounded-full bg-card/80 backdrop-blur-sm hover:bg-card transition-all duration-200 hover:scale-110 z-10"
         >
           <Heart
             className={`h-5 w-5 transition-colors duration-200 ${isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
@@ -75,25 +80,6 @@ export function PetCard({ pet, index }: PetCardProps) {
               <Images className="h-3 w-3 mr-1" />
               {pet.images.length}
             </Badge>
-          )}
-        </div>
-
-        {/* Quick view on hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          {pet.in_stock ? (
-            <Button
-              asChild
-              className="w-full bg-card text-card-foreground hover:bg-card/90"
-            >
-              <Link href={`/pets/${pet.id}`}>View Details</Link>
-            </Button>
-          ) : (
-            <Button
-              className="w-full bg-card text-card-foreground hover:bg-card/90"
-              disabled
-            >
-              Notify Me
-            </Button>
           )}
         </div>
       </div>
@@ -129,5 +115,6 @@ export function PetCard({ pet, index }: PetCardProps) {
         </p>
       </CardContent>
     </Card>
+    </Link>
   )
 }

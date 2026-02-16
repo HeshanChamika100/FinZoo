@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { usePets } from "@/lib/pets-context"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
+import { MessageCircle } from "lucide-react"
 
 export default function PetDetailPage({
   params,
@@ -53,6 +54,9 @@ export default function PetDetailPage({
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header variant="white" />
+
+      {/* Spacer for fixed header */}
+      <div className="h-12" />
 
       {/* Action bar */}
       <div className="sticky top-16 z-30 bg-card/80 backdrop-blur-md border-b border-border">
@@ -219,8 +223,10 @@ export default function PetDetailPage({
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2"
                   >
-                    Inquire Now
+                    <MessageCircle className="h-5 w-5 text-primary-foreground" />
+                    Inquire Now Via Whatsapp
                   </a>
                 ) : (
                   "Notify When Available"
