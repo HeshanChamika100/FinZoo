@@ -9,7 +9,7 @@ import { ShopFilters } from "@/components/shop/shop-filters"
 import { useState, useMemo } from "react"
 import { Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
 export default function ShopPage() {
    const { pets, loading } = usePets()
@@ -90,6 +90,9 @@ export default function ShopPage() {
                            </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+                           <SheetHeader>
+                              <SheetTitle>Filters</SheetTitle>
+                           </SheetHeader>
                            <div className="py-4">
                               <ShopFilters
                                  minPrice={0}
