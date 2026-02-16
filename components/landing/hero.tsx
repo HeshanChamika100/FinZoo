@@ -326,7 +326,8 @@ export function Hero() {
             >
               <span className="hero-word inline-block" style={{ opacity: 0 }}>Exotic Fins,</span>
               <br />
-              <span className="hero-word inline-block" style={{ opacity: 0 }}>Fluffy Friends &{' '}</span>
+              <span className="hero-word inline-block" style={{ opacity: 0 }}>Fluffy Friends &</span>
+              {' '}
               <span className="hero-word inline-block relative" style={{ opacity: 0 }}>
                 <span className="text-emerald-400">Feathers</span>
                 <svg
