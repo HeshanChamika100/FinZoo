@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import { X, Download, Copy, Check, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { Pet } from "@/lib/pets-data"
+import type { Pet } from "@/lib/pets-context"
 import { QRCodeCanvas } from "qrcode.react"
 import { toPng } from "html-to-image"
 import Image from "next/image"
@@ -36,7 +36,7 @@ export function QRModal({ pet, isOpen, onClose }: QRModalProps) {
       })
 
       const link = document.createElement("a")
-      link.download = `finzoo-${pet.name.toLowerCase()}-leaflet.png`
+      link.download = `finzoo-${pet.breed.toLowerCase().replace(/\s+/g, '-')}-leaflet.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
@@ -74,27 +74,27 @@ export function QRModal({ pet, isOpen, onClose }: QRModalProps) {
         >
           {/* Header with Logo - Centered */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 16 }}>
-            <Image 
-              src="/logo.png" 
-              alt="FinZoo Logo" 
-              width={48} 
-              height={48} 
-              style={{ borderRadius: 8 }} 
-              priority 
+            <Image
+              src="/logo.png"
+              alt="FinZoo Logo"
+              width={48}
+              height={48}
+              style={{ borderRadius: 8 }}
+              priority
               unoptimized
             />
             <div style={{ fontSize: 28, fontWeight: 700 }}>
               <span style={{ color: '#196677' }}>Fin</span><span style={{ color: '#c9a97d' }}>Zoo</span>
             </div>
           </div>
-          
+
           {/* Pet Details - Centered */}
           <div style={{ marginBottom: 12, width: '100%' }}>
-            <div style={{ fontSize: 22, fontWeight: 600, color: '#222222' }}>{pet?.name}</div>
-            <div style={{ fontSize: 15, color: '#666666', marginBottom: 2 }}>{pet?.breed} &bull; {pet?.species}</div>
+            <div style={{ fontSize: 22, fontWeight: 600, color: '#222222' }}>{pet?.breed}</div>
+            <div style={{ fontSize: 15, color: '#666666', marginBottom: 2 }}>{pet?.species}</div>
             <div style={{ fontSize: 13, color: '#888888' }}>Scan the QR code to view this pet online!</div>
           </div>
-          
+
           {/* QR Code Container */}
           <div style={{ display: 'flex', justifyContent: 'center', margin: '18px 0', width: '100%' }}>
             <div style={{ background: '#ffffff', padding: 8, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #eee' }}>
@@ -107,7 +107,7 @@ export function QRModal({ pet, isOpen, onClose }: QRModalProps) {
               />
             </div>
           </div>
-          
+
           <div style={{ fontSize: 13, color: '#555555', wordBreak: 'break-all', marginBottom: 8 }}>{"fin-zoo.vercel.app"}</div>
           <div style={{ fontSize: 12, color: '#aaaaaa' }}>FinZoo &copy; {new Date().getFullYear()}</div>
         </div>
@@ -131,8 +131,8 @@ export function QRModal({ pet, isOpen, onClose }: QRModalProps) {
           </button>
 
           <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-card-foreground">{pet.name}</h2>
-            <p className="text-sm text-muted-foreground">{pet.breed} &bull; {pet.species}</p>
+            <h2 className="text-xl font-bold text-card-foreground">{pet.breed}</h2>
+            <p className="text-sm text-muted-foreground">{pet.species}</p>
           </div>
 
           <div className="flex justify-center mb-6">

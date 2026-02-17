@@ -72,7 +72,6 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
   const [videoError, setVideoError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
-    name: "",
     species: "",
     breed: "",
     age: "",
@@ -96,7 +95,6 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
       const allImages = pet.images?.length ? pet.images : (pet.image ? [pet.image] : [])
       const allVideos = pet.videos?.length ? pet.videos : (pet.video ? [pet.video] : [])
       setFormData({
-        name: pet.name,
         species: pet.species,
         breed: pet.breed,
         age: pet.age,
@@ -125,9 +123,6 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required"
-    }
     if (!formData.species) {
       newErrors.species = "Species is required"
     }
@@ -198,7 +193,6 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
       const allVideos = uploadedVideoUrls
 
       await updatePet(pet.id, {
-        name: formData.name.trim(),
         species: formData.species,
         breed: formData.breed.trim(),
         age: formData.age.trim(),
@@ -265,18 +259,7 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="edit-name" className="text-foreground">Pet Name *</Label>
-            <Input
-              id="edit-name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g., Max, Whiskers, Goldie"
-              className="bg-background border-input"
-            />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-          </div>
+
 
           {/* Species and Breed */}
           <div className="grid grid-cols-2 gap-4">
@@ -474,9 +457,9 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete {pet.name}?</AlertDialogTitle>
+                  <AlertDialogTitle>Delete {pet.breed}?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete {pet.name} from your inventory.
+                    This action cannot be undone. This will permanently delete this {pet.species} ({pet.breed}) from your inventory.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -69,7 +69,6 @@ export default function AdminDashboard() {
   const filteredPets = pets.filter((pet) => {
     // Search filter
     const matchesSearch =
-      pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pet.species.toLowerCase().includes(searchQuery.toLowerCase())
 
