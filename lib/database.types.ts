@@ -12,7 +12,6 @@ export interface Database {
       pets: {
         Row: {
           id: string
-          name: string
           species: string
           breed: string
           age: string
@@ -32,7 +31,6 @@ export interface Database {
         }
         Insert: {
           id?: string
-          name: string
           species: string
           breed: string
           age: string
@@ -52,7 +50,6 @@ export interface Database {
         }
         Update: {
           id?: string
-          name?: string
           species?: string
           breed?: string
           age?: string
@@ -77,6 +74,7 @@ export interface Database {
           email: string
           name: string | null
           role: string
+          is_approved: boolean
           created_at: string
           updated_at: string
         }
@@ -85,6 +83,7 @@ export interface Database {
           email: string
           name?: string | null
           role?: string
+          is_approved?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -93,6 +92,7 @@ export interface Database {
           email?: string
           name?: string | null
           role?: string
+          is_approved?: boolean
           created_at?: string
           updated_at?: string
         }

@@ -15,6 +15,7 @@ import {
   List,
   Filter,
   Plus,
+  Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,12 +32,13 @@ import { AdminPetCard } from "@/components/admin/admin-pet-card"
 import { QRModal } from "@/components/admin/qr-modal"
 import { AddPetModal } from "@/components/admin/add-pet-modal"
 import { EditPetModal } from "@/components/admin/edit-pet-modal"
+import { PendingAdmins } from "@/components/admin/pending-admins"
 import type { Pet } from "@/lib/pets-context"
 
 type FilterType = "all" | "inStock" | "soldOut" | "visible" | "hidden"
 
 export default function AdminDashboard() {
-  const { user, profile, isAuthenticated, logout, loading: authLoading } = useAuth()
+  const { user, profile, isAuthenticated, isAdmin, logout, loading: authLoading } = useAuth()
   const { pets, loading: petsLoading } = usePets()
   const router = useRouter()
 
@@ -53,7 +55,11 @@ export default function AdminDashboard() {
     if (!authLoading && !isAuthenticated) {
       router.push("/admin/login")
     }
-  }, [isAuthenticated, authLoading, router])
+    // Redirect authenticated users who are not approved admins
+    if (!authLoading && isAuthenticated && profile && !isAdmin) {
+      router.push("/admin/login")
+    }
+  }, [isAuthenticated, isAdmin, profile, authLoading, router])
 
   const handleGenerateQR = (pet: Pet) => {
     setSelectedPet(pet)
@@ -69,7 +75,6 @@ export default function AdminDashboard() {
   const filteredPets = pets.filter((pet) => {
     // Search filter
     const matchesSearch =
-      pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pet.species.toLowerCase().includes(searchQuery.toLowerCase())
 
@@ -102,7 +107,8 @@ export default function AdminDashboard() {
     hidden: pets.filter((p) => !p.is_visible).length,
   }
 
-  if (authLoading) {
+  // Show loading while auth or profile is still loading
+  if (authLoading || (isAuthenticated && !profile)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -113,7 +119,7 @@ export default function AdminDashboard() {
     )
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isAdmin) {
     return null
   }
 
@@ -145,6 +151,16 @@ export default function AdminDashboard() {
                 <Plus className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Add Pet</span>
               </Button>
+              <Link href="/admin/users">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-border"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Users</span>
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"
@@ -167,6 +183,9 @@ export default function AdminDashboard() {
             Manage your pets, update stock status, and generate QR codes.
           </p>
         </div>
+
+        {/* Pending Admin Requests */}
+        <PendingAdmins />
 
         {/* Stats cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -206,7 +225,7 @@ export default function AdminDashboard() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search pets by name, breed, or species..."
+              placeholder="Search pets by breed or species..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-card border-input"

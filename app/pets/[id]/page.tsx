@@ -96,7 +96,7 @@ export default function PetDetailPage({
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
               <Image
                 src={allImages[selectedImage] || "/placeholder.svg"}
-                alt={pet.name}
+                alt={pet.breed}
                 fill
                 className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                 onLoad={() => setImageLoaded(true)}
@@ -105,7 +105,7 @@ export default function PetDetailPage({
               {!imageLoaded && (
                 <div className="absolute inset-0 bg-muted animate-pulse" />
               )}
-              
+
               {/* Status badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {pet.featured && (
@@ -137,15 +137,14 @@ export default function PetDetailPage({
                       setSelectedImage(index)
                       setImageLoaded(false)
                     }}
-                    className={`relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      index === selectedImage
-                        ? "border-primary ring-2 ring-primary/30"
-                        : "border-border hover:border-primary/50"
-                    }`}
+                    className={`relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === selectedImage
+                      ? "border-primary ring-2 ring-primary/30"
+                      : "border-border hover:border-primary/50"
+                      }`}
                   >
                     <Image
                       src={img}
-                      alt={`${pet.name} image ${index + 1}`}
+                      alt={`${pet.breed} image ${index + 1}`}
                       fill
                       className="object-cover"
                       unoptimized
@@ -179,8 +178,8 @@ export default function PetDetailPage({
               </Badge>
             </div>
 
-            <h1 className="text-3xl font-bold text-foreground mb-2">{pet.name}</h1>
-            <p className="text-lg text-muted-foreground mb-4">{pet.breed}</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{pet.breed}</h1>
+            <p className="text-lg text-muted-foreground mb-4">{pet.species}</p>
 
             <div className="flex items-center gap-2 mb-6">
               <Tag className="h-5 w-5 text-primary" />
@@ -216,7 +215,7 @@ export default function PetDetailPage({
                 {pet.in_stock ? (
                   <a
                     href={`https://wa.me/94701964941?text=${encodeURIComponent(
-                      `Hi! I'm interested in *${pet.name}*\n\n` +
+                      `Hi! I'm interested in *${pet.breed}*\n\n` +
                       `Species: ${pet.species}\n` +
                       `Breed: ${pet.breed}\n` +
                       `Age: ${pet.age}\n` +

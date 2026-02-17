@@ -54,7 +54,7 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
         <div className="relative w-full sm:w-40 h-32 sm:h-auto shrink-0">
           <Image
             src={coverImage}
-            alt={pet.name}
+            alt={pet.breed}
             fill
             className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setImageLoaded(true)}
@@ -62,7 +62,7 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
           {!imageLoaded && (
             <div className="absolute inset-0 bg-muted animate-pulse" />
           )}
-          
+
           {/* Status overlay */}
           {!pet.is_visible && (
             <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
@@ -77,9 +77,9 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-lg font-semibold text-card-foreground">{pet.name}</h3>
+                <h3 className="text-lg font-semibold text-card-foreground">{pet.breed}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {pet.breed} &bull; {pet.species}
+                  {pet.species}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
@@ -204,9 +204,9 @@ export function AdminPetCard({ pet, onGenerateQR, onEdit }: AdminPetCardProps) {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete {pet.name}?</AlertDialogTitle>
+                    <AlertDialogTitle>Delete {pet.breed}?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete {pet.name} from your inventory.
+                      This action cannot be undone. This will permanently delete this {pet.species} ({pet.breed}) from your inventory.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
