@@ -36,7 +36,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin/dashboard') && !user) {
+  if ((request.nextUrl.pathname.startsWith('/admin/dashboard') ||
+    request.nextUrl.pathname.startsWith('/admin/users')) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
     return NextResponse.redirect(url)

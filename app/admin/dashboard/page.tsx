@@ -15,6 +15,7 @@ import {
   List,
   Filter,
   Plus,
+  Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -150,6 +151,16 @@ export default function AdminDashboard() {
                 <Plus className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Add Pet</span>
               </Button>
+              <Link href="/admin/users">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-border"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Users</span>
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"
