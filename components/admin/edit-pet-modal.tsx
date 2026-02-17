@@ -250,7 +250,7 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-card border-border">
+      <DialogContent className="sm:!max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-card-foreground">
             <Pencil className="h-5 w-5 text-primary" />
