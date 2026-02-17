@@ -11,16 +11,33 @@ export async function GET(request: Request) {
       const { error } = await supabase.auth.exchangeCodeForSession(code)
 
       if (!error) {
-         // Check if user is approved
          const { data: { user } } = await supabase.auth.getUser()
 
          if (user) {
-            // Fetch or wait for profile to be created (auth-context handles creation)
-            const { data: profile } = await supabase
+            // Try to fetch existing profile
+            let { data: profile } = await supabase
                .from('profiles')
                .select('role, is_approved')
                .eq('id', user.id)
                .single()
+
+            // If no profile exists, create one (first-time OAuth user)
+            if (!profile) {
+               const meta = user.user_metadata
+               const { data: newProfile } = await supabase
+                  .from('profiles')
+                  .upsert({
+                     id: user.id,
+                     email: user.email ?? '',
+                     name: meta?.full_name ?? meta?.name ?? null,
+                     role: 'user',
+                     is_approved: false,
+                  })
+                  .select('role, is_approved')
+                  .single()
+
+               profile = newProfile
+            }
 
             if (profile && profile.role === 'admin' && profile.is_approved) {
                // Approved admin — redirect to dashboard
@@ -41,3 +58,4 @@ export async function GET(request: Request) {
    loginUrl.searchParams.set('error', 'auth_callback_error')
    return NextResponse.redirect(loginUrl.toString())
 }
+

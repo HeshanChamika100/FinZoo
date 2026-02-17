@@ -55,6 +55,8 @@ export default function UserManagementPage() {
    const [searchQuery, setSearchQuery] = useState("")
    const [filter, setFilter] = useState<FilterType>("all")
    const [actionLoading, setActionLoading] = useState<string | null>(null)
+   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null)
+   const [isDeleting, setIsDeleting] = useState(false)
 
    useEffect(() => {
       if (!authLoading && !isAuthenticated) {
@@ -160,26 +162,30 @@ export default function UserManagementPage() {
       }
    }
 
-   const handleDelete = async (userId: string) => {
-      if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return
+   const handleDeleteConfirm = async () => {
+      if (!deleteTarget) return
 
-      setActionLoading(userId)
+      setIsDeleting(true)
       try {
-         const { error } = await supabase
-            .from("profiles")
-            .delete()
-            .eq("id", userId)
+         const response = await fetch("/api/admin/delete-user", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: deleteTarget.id }),
+         })
 
-         if (error) {
-            console.error("Error deleting user:", error.message)
+         const data = await response.json()
+
+         if (!response.ok) {
+            console.error("Error deleting user:", data.error)
             return
          }
 
-         setUsers((prev) => prev.filter((u) => u.id !== userId))
+         setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id))
+         setDeleteTarget(null)
       } catch (error) {
          console.error("Error deleting user:", error)
       } finally {
-         setActionLoading(null)
+         setIsDeleting(false)
       }
    }
 
@@ -414,8 +420,8 @@ export default function UserManagementPage() {
                                        <Badge
                                           variant="secondary"
                                           className={`text-xs ${u.role === "admin"
-                                                ? "bg-primary/10 text-primary"
-                                                : "bg-muted text-muted-foreground"
+                                             ? "bg-primary/10 text-primary"
+                                             : "bg-muted text-muted-foreground"
                                              }`}
                                        >
                                           {u.role === "admin" ? (
@@ -429,8 +435,8 @@ export default function UserManagementPage() {
                                        <Badge
                                           variant="secondary"
                                           className={`text-xs ${u.is_approved
-                                                ? "bg-green-500/10 text-green-600"
-                                                : "bg-amber-500/10 text-amber-600"
+                                             ? "bg-green-500/10 text-green-600"
+                                             : "bg-amber-500/10 text-amber-600"
                                              }`}
                                        >
                                           {u.is_approved ? (
@@ -527,7 +533,7 @@ export default function UserManagementPage() {
                                        <Button
                                           size="sm"
                                           variant="outline"
-                                          onClick={() => handleDelete(u.id)}
+                                          onClick={() => setDeleteTarget(u)}
                                           disabled={actionLoading === u.id}
                                           className="border-red-500/30 text-red-600 hover:bg-red-500/10 hover:text-red-700"
                                        >
@@ -555,6 +561,108 @@ export default function UserManagementPage() {
                </div>
             )}
          </main>
+
+         {/* Delete Confirmation Modal */}
+         {deleteTarget && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+               {/* Backdrop */}
+               <div
+                  className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+                  onClick={() => { if (!isDeleting) setDeleteTarget(null) }}
+               />
+
+               {/* Modal */}
+               <div className="relative z-10 w-full max-w-md mx-4 animate-in zoom-in-95 slide-in-from-bottom-4 fade-in duration-300">
+                  <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
+                     {/* Red accent bar */}
+                     <div className="h-1 bg-gradient-to-r from-red-500 via-red-600 to-red-500" />
+
+                     <div className="p-6">
+                        {/* Warning icon */}
+                        <div className="flex justify-center mb-5">
+                           <div className="relative">
+                              <div className="absolute inset-0 bg-red-500/20 rounded-full blur-xl animate-pulse" />
+                              <div className="relative h-16 w-16 rounded-full bg-red-500/10 border-2 border-red-500/20 flex items-center justify-center">
+                                 <Trash2 className="h-7 w-7 text-red-500" />
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Title */}
+                        <h3 className="text-xl font-bold text-card-foreground text-center mb-2">
+                           Delete User
+                        </h3>
+                        <p className="text-sm text-muted-foreground text-center mb-5">
+                           This action cannot be undone. The user will be permanently removed.
+                        </p>
+
+                        {/* User preview card */}
+                        <div className="bg-muted/50 rounded-xl p-4 border border-border mb-6">
+                           <div className="flex items-center gap-3">
+                              <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${deleteTarget.role === "admin" ? "bg-primary/10" : "bg-muted"
+                                 }`}>
+                                 <span className={`text-sm font-semibold ${deleteTarget.role === "admin" ? "text-primary" : "text-muted-foreground"
+                                    }`}>
+                                    {(deleteTarget.name || deleteTarget.email).charAt(0).toUpperCase()}
+                                 </span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                 <p className="text-sm font-medium text-card-foreground truncate">
+                                    {deleteTarget.name || "No name"}
+                                 </p>
+                                 <p className="text-xs text-muted-foreground truncate">
+                                    {deleteTarget.email}
+                                 </p>
+                              </div>
+                              <Badge
+                                 variant="secondary"
+                                 className={`text-xs shrink-0 ${deleteTarget.role === "admin"
+                                    ? "bg-primary/10 text-primary"
+                                    : "bg-muted text-muted-foreground"
+                                    }`}
+                              >
+                                 {deleteTarget.role === "admin" ? (
+                                    <><ShieldCheck className="h-3 w-3 mr-1" /> Admin</>
+                                 ) : (
+                                    <><Users className="h-3 w-3 mr-1" /> User</>
+                                 )}
+                              </Badge>
+                           </div>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex gap-3">
+                           <Button
+                              variant="outline"
+                              className="flex-1 border-border"
+                              onClick={() => setDeleteTarget(null)}
+                              disabled={isDeleting}
+                           >
+                              Cancel
+                           </Button>
+                           <Button
+                              className="flex-1 bg-red-600 text-white hover:bg-red-700 border-0"
+                              onClick={handleDeleteConfirm}
+                              disabled={isDeleting}
+                           >
+                              {isDeleting ? (
+                                 <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Deleting...
+                                 </>
+                              ) : (
+                                 <>
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete User
+                                 </>
+                              )}
+                           </Button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         )}
       </div>
    )
 }

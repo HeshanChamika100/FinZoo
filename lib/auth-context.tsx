@@ -172,19 +172,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: error.message }
       }
 
-      // Check if email confirmation is required
-      const needsConfirmation = data.user?.identities?.length === 0
+      // When identities is empty, the email already exists in Supabase Auth
+      // (Supabase silently succeeds to avoid revealing registered emails)
+      const emailAlreadyExists = data.user?.identities?.length === 0
 
-      if (data.user && !needsConfirmation) {
+      if (emailAlreadyExists) {
+        return {
+          success: false,
+          error: "An account with this email already exists. Please try signing in instead.",
+        }
+      }
+
+      if (data.user) {
         await fetchProfile(data.user.id)
       }
 
       return {
         success: true,
-        needsEmailConfirmation: needsConfirmation,
-        message: needsConfirmation
-          ? "Please check your email to confirm your account before signing in."
-          : undefined
       }
     } catch (error) {
       return { success: false, error: "An unexpected error occurred" }
