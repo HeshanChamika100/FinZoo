@@ -36,18 +36,28 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin/dashboard') && !user) {
+  if ((request.nextUrl.pathname.startsWith('/admin/dashboard') ||
+    request.nextUrl.pathname.startsWith('/admin/users')) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users away from login/signup
-  if ((request.nextUrl.pathname.startsWith('/admin/login') || 
-       request.nextUrl.pathname.startsWith('/admin/signup')) && user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/admin/dashboard'
-    return NextResponse.redirect(url)
+  // Redirect approved admin users away from login/signup to dashboard
+  if ((request.nextUrl.pathname.startsWith('/admin/login') ||
+    request.nextUrl.pathname.startsWith('/admin/signup')) && user) {
+    // Check if the user is actually an approved admin before redirecting
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, is_approved')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role === 'admin' && profile?.is_approved) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin/dashboard'
+      return NextResponse.redirect(url)
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're

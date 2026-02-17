@@ -99,12 +99,11 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
   // Filter pets based on search query
   const filteredPets = searchQuery.trim()
-    ? pets.filter(pet => 
-        pet.is_visible &&
-        (pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         pet.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         pet.breed.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 5) // Limit to 5 results
+    ? pets.filter(pet =>
+      pet.is_visible &&
+      (pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        pet.species.toLowerCase().includes(searchQuery.toLowerCase()))
+    ).slice(0, 5) // Limit to 5 results
     : []
 
   // Close search results when clicking outside
@@ -135,15 +134,14 @@ export function Header({ variant = 'default' }: HeaderProps) {
   }
 
   return (
-    <header 
-      ref={headerRef} 
-      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
-        variant === 'white'
-          ? 'bg-white border-border'
-          : isOverHero 
-            ? 'bg-transparent border-transparent' 
-            : 'bg-background/80 backdrop-blur-md border-border'
-      }`}
+    <header
+      ref={headerRef}
+      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${variant === 'white'
+        ? 'bg-white border-border'
+        : isOverHero
+          ? 'bg-transparent border-transparent'
+          : 'bg-background/80 backdrop-blur-md border-border'
+        }`}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -163,22 +161,20 @@ export function Header({ variant = 'default' }: HeaderProps) {
           {/* Search Bar */}
           <div ref={searchRef} className="hidden md:block relative flex-1 max-w-md">
             <div className="relative">
-              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${
-                variant === 'white' ? 'text-muted-foreground' : isOverHero ? 'text-white/70' : 'text-muted-foreground'
-              }`} />
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${variant === 'white' ? 'text-muted-foreground' : isOverHero ? 'text-white/70' : 'text-muted-foreground'
+                }`} />
               <Input
                 type="text"
                 placeholder="Search pets..."
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setShowSearchResults(true)}
-                className={`pl-10 ${
-                  variant === 'white' 
-                    ? 'bg-white border-border' 
-                    : isOverHero 
-                      ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60' 
-                      : 'bg-background border-border'
-                }`}
+                className={`pl-10 ${variant === 'white'
+                  ? 'bg-white border-border'
+                  : isOverHero
+                    ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
+                    : 'bg-background border-border'
+                  }`}
               />
             </div>
 
@@ -196,7 +192,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                         {pet.image ? (
                           <Image
                             src={pet.image}
-                            alt={pet.name}
+                            alt={pet.breed}
                             width={48}
                             height={48}
                             className="rounded-md object-cover"
@@ -207,7 +203,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{pet.name}</p>
+                          <p className="font-medium truncate">{pet.breed}</p>
                           <p className="text-sm text-muted-foreground truncate">
                             {pet.species} • {pet.breed}
                           </p>
@@ -230,33 +226,29 @@ export function Header({ variant = 'default' }: HeaderProps) {
           <div ref={navLinksRef} className="hidden md:flex items-center gap-8 shrink-0">
             <Link
               href="/shop"
-              className={`hover:text-primary transition-colors duration-200 font-medium ${
-                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-              }`}
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
             >
               Shop
             </Link>
             <button
               onClick={() => scrollTo('featured')}
-              className={`hover:text-primary transition-colors duration-200 font-medium ${
-                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-              }`}
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
             >
               Featured Pets
             </button>
             <button
               onClick={() => scrollTo('about')}
-              className={`hover:text-primary transition-colors duration-200 font-medium ${
-                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-              }`}
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
             >
               About Us
             </button>
             <button
               onClick={() => scrollTo('contact')}
-              className={`hover:text-primary transition-colors duration-200 font-medium ${
-                variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-              }`}
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                }`}
             >
               Contact
             </button>
@@ -269,9 +261,8 @@ export function Header({ variant = 'default' }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className={`${
-                variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
-              }`}
+              className={`${variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
+                }`}
               onClick={() => {
                 setMobileSearchOpen(!mobileSearchOpen)
                 if (mobileMenuOpen) setMobileMenuOpen(false)
@@ -282,9 +273,8 @@ export function Header({ variant = 'default' }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className={`${
-                variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
-              }`}
+              className={`${variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
+                }`}
               onClick={() => {
                 setMobileMenuOpen(!mobileMenuOpen)
                 if (mobileSearchOpen) setMobileSearchOpen(false)
@@ -297,30 +287,27 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
         {/* Mobile Search Dropdown */}
         {mobileSearchOpen && (
-          <div ref={mobileSearchRef} className={`md:hidden py-4 border-t animate-in rounded-xl slide-in-from-top-2 duration-200 ${
-            variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
-          }`}>
+          <div ref={mobileSearchRef} className={`md:hidden py-4 border-t animate-in rounded-xl slide-in-from-top-2 duration-200 ${variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
+            }`}>
             <div className="px-4">
               <div className="relative">
-                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${
-                  variant === 'white' ? 'text-muted-foreground' : isOverHero ? 'text-white/70' : 'text-muted-foreground'
-                }`} />
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${variant === 'white' ? 'text-muted-foreground' : isOverHero ? 'text-white/70' : 'text-muted-foreground'
+                  }`} />
                 <Input
                   type="text"
                   placeholder="Search pets..."
                   value={searchQuery}
                   onChange={handleSearchChange}
                   autoFocus
-                  className={`pl-10 ${
-                    variant === 'white' 
-                      ? 'bg-white border-border' 
-                      : isOverHero 
-                        ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60' 
-                        : 'bg-background border-border'
-                  }`}
+                  className={`pl-10 ${variant === 'white'
+                    ? 'bg-white border-border'
+                    : isOverHero
+                      ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
+                      : 'bg-background border-border'
+                    }`}
                 />
               </div>
-              
+
               {/* Mobile Search Results */}
               {searchQuery.trim() && (
                 <div className="mt-2 bg-background border border-border rounded-lg shadow-lg overflow-hidden">
@@ -335,7 +322,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                           {pet.image ? (
                             <Image
                               src={pet.image}
-                              alt={pet.name}
+                              alt={pet.breed}
                               width={48}
                               height={48}
                               className="rounded-md object-cover"
@@ -346,7 +333,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{pet.name}</p>
+                            <p className="font-medium truncate">{pet.breed}</p>
                             <p className="text-sm text-muted-foreground truncate">
                               {pet.species} • {pet.breed}
                             </p>
@@ -369,40 +356,35 @@ export function Header({ variant = 'default' }: HeaderProps) {
         )}
 
         {mobileMenuOpen && (
-          <div className={`md:hidden py-4 border-t animate-in rounded-xl text-center slide-in-from-top-2 duration-200 ${
-            variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
-          }`}>
+          <div className={`md:hidden py-4 border-t animate-in rounded-xl text-center slide-in-from-top-2 duration-200 ${variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
+            }`}>
             <div className="flex flex-col gap-4">
               <Link
                 href="/shop"
-                className={`hover:text-primary transition-colors px-2 py-2 ${
-                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-                }`}
+                className={`hover:text-primary transition-colors px-2 py-2 ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                  }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Shop
               </Link>
               <button
                 onClick={() => scrollTo('featured')}
-                className={`hover:text-primary transition-colors px-2 py-2 text-center ${
-                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-                }`}
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                  }`}
               >
                 Featured Pets
               </button>
               <button
                 onClick={() => scrollTo('about')}
-                className={`hover:text-primary transition-colors px-2 py-2 text-center ${
-                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-                }`}
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                  }`}
               >
                 About Us
               </button>
               <button
                 onClick={() => scrollTo('contact')}
-                className={`hover:text-primary transition-colors px-2 py-2 text-center ${
-                  variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
-                }`}
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                  }`}
               >
                 Contact
               </button>

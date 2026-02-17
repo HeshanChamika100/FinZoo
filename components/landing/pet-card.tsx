@@ -31,7 +31,7 @@ export function PetCard({ pet, index }: PetCardProps) {
         <div className="relative overflow-hidden aspect-4/3 rounded-t-2xl">
           <Image
             src={coverImage}
-            alt={pet.name}
+            alt={pet.breed}
             fill
             className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setImageLoaded(true)}
@@ -88,9 +88,9 @@ export function PetCard({ pet, index }: PetCardProps) {
           <div className="flex items-start justify-between mb-2">
             <div>
               <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors duration-200">
-                {pet.name}
+                {pet.breed}
               </h3>
-              <p className="text-sm text-muted-foreground">{pet.breed}</p>
+              <p className="text-sm text-muted-foreground">{pet.species}</p>
             </div>
             <div className="text-right">
               <div className="flex items-center gap-1 text-primary font-bold">

@@ -7,7 +7,6 @@ import { useAuth } from "./auth-context"
 // Pet type matching our database schema
 export interface Pet {
   id: string
-  name: string
   species: string
   breed: string
   age: string
@@ -156,7 +155,7 @@ export function PetsProvider({ children }: { children: ReactNode }) {
     try {
       // Get current user ID from auth
       const { data: { user: currentUser } } = await supabase.auth.getUser()
-      
+
       if (!currentUser) {
         throw new Error("User must be authenticated to add pets")
       }
