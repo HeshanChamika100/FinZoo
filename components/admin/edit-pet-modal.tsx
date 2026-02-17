@@ -261,7 +261,9 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:!max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border p-0">
+      <DialogContent
+        className="sm:!max-w-4xl max-h-[90vh] overflow-y-auto bg-card !border-0 !gap-0 !p-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/40 [&>[data-slot=dialog-close]]:text-white [&>[data-slot=dialog-close]]:hover:opacity-100 [&>[data-slot=dialog-close]]:z-50"
+      >
         <DialogTitle className="sr-only">Edit Pet</DialogTitle>
         {/* Gradient Header */}
         <div className="relative overflow-hidden rounded-t-lg">
