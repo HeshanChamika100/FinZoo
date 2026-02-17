@@ -60,6 +60,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const [videoError, setVideoError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
+    name: "",
     species: "",
     breed: "",
     age: "",
@@ -80,6 +81,9 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required"
+    }
     if (!formData.species) {
       newErrors.species = "Species is required"
     }
@@ -152,6 +156,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       const allVideos = uploadedVideoUrls
 
       await addPet({
+        name: formData.name.trim(),
         species: formData.species,
         breed: formData.breed.trim(),
         age: formData.age.trim(),
@@ -169,6 +174,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
 
       // Reset form on success
       setFormData({
+        name: "",
         species: "",
         breed: "",
         age: "",
@@ -199,6 +205,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
 
   const handleClose = () => {
     setFormData({
+      name: "",
       species: "",
       breed: "",
       age: "",
@@ -235,7 +242,18 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
+          {/* Name */}
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-foreground">Pet Name *</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g., Max, Whiskers, Goldie"
+              className="bg-background border-input"
+            />
+            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+          </div>
 
           {/* Species and Breed */}
           <div className="grid grid-cols-2 gap-4">

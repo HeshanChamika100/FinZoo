@@ -44,11 +44,9 @@ export default function AdminSignupPage() {
     try {
       const result = await signup(name, email, password)
       if (result.success) {
-        if (result.needsEmailConfirmation) {
-          setSuccessMessage(result.message || "Please check your email to confirm your account.")
-        } else {
-          router.push("/admin/dashboard")
-        }
+        setSuccessMessage(
+          "Your account has been created and is pending approval by an administrator. You will be able to sign in once your account is approved."
+        )
       } else {
         setError(result.error || "Failed to create account")
       }
@@ -86,7 +84,7 @@ export default function AdminSignupPage() {
             </div>
             <CardTitle className="text-2xl font-bold text-card-foreground">Create Account</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Sign up to access the admin dashboard
+              Sign up to request admin access
             </CardDescription>
           </CardHeader>
 

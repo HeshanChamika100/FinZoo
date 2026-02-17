@@ -9,6 +9,7 @@ interface Profile {
   email: string
   name: string | null
   role: string
+  is_approved: boolean
 }
 
 interface AuthContextType {
@@ -43,7 +44,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // PGRST116 = no rows found — profile doesn't exist yet, create it
         if (error.code === "PGRST116") {
           const { data: authUser } = await supabase.auth.getUser()
-          const meta = authUser?.user?.user_metadata
+
+          // If the auth user no longer exists (stale session), don't try to create a profile
+          if (!authUser?.user) {
+            console.warn("No authenticated user found — skipping profile creation")
+            return
+          }
+
+          const meta = authUser.user.user_metadata
 
           const { data: newProfile, error: insertError } = await supabase
             .from("profiles")
@@ -52,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               email: authUser?.user?.email ?? "",
               name: meta?.name ?? null,
               role: "user",
+              is_approved: false,
             })
             .select()
             .single()
@@ -80,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data: { session } } = await supabase.auth.getSession()
         setUser(session?.user ?? null)
-        
+
         if (session?.user) {
           fetchProfile(session.user.id)
         }
@@ -122,6 +131,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (data.user) {
         await fetchProfile(data.user.id)
+
+        // Check if user is approved
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("is_approved")
+          .eq("id", data.user.id)
+          .single()
+
+        if (profileData && !profileData.is_approved) {
+          // Sign out unapproved users
+          await supabase.auth.signOut()
+          setUser(null)
+          setProfile(null)
+          return { success: false, error: "Your account is pending approval by an administrator. Please wait until an existing admin approves your account." }
+        }
       }
 
       return { success: true }
@@ -154,10 +178,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await fetchProfile(data.user.id)
       }
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         needsEmailConfirmation: needsConfirmation,
-        message: needsConfirmation 
+        message: needsConfirmation
           ? "Please check your email to confirm your account before signing in."
           : undefined
       }
@@ -186,7 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         profile,
         isAuthenticated: !!user,
-        isAdmin: profile?.role === "admin",
+        isAdmin: profile?.role === "admin" && profile?.is_approved === true,
         loading,
         login,
         signup,

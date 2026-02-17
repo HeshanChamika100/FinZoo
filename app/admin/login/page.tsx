@@ -153,7 +153,7 @@ export default function AdminLoginPage() {
             {/* Note */}
             <div className="mt-6 p-3 rounded-lg bg-muted/50 border border-border">
               <p className="text-xs text-muted-foreground text-center">
-                <span className="font-medium">Note:</span> Admin access requires role assignment in Supabase database.
+                <span className="font-medium">Note:</span> New admin accounts require approval from an existing administrator before you can sign in.
               </p>
             </div>
           </CardContent>
