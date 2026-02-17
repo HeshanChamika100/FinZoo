@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { X, Download, Copy, Check, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Pet } from "@/lib/pets-data"
+import { QRCodeCanvas } from "qrcode.react"
 
 interface QRModalProps {
   pet: Pet | null
@@ -12,115 +13,20 @@ interface QRModalProps {
 }
 
 export function QRModal({ pet, isOpen, onClose }: QRModalProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [copied, setCopied] = useState(false)
-  const [qrGenerated, setQrGenerated] = useState(false)
 
   const petUrl = pet
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/pets/${pet.id}`
     : ""
 
-  useEffect(() => {
-    if (!isOpen || !pet || !canvasRef.current) return
-
-    // Generate QR code using canvas
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    const size = 200
-    canvas.width = size
-    canvas.height = size
-
-    // Simple QR-like pattern generator (for demo purposes)
-    // In production, you would use a library like qrcode
-    generateQRPattern(ctx, petUrl, size)
-    setQrGenerated(true)
-  }, [isOpen, pet, petUrl])
-
-  const generateQRPattern = (
-    ctx: CanvasRenderingContext2D,
-    _data: string,
-    size: number
-  ) => {
-    const moduleCount = 25
-    const moduleSize = size / moduleCount
-
-    // Clear canvas
-    ctx.fillStyle = "#ffffff"
-    ctx.fillRect(0, 0, size, size)
-
-    // Generate pattern based on data hash
-    ctx.fillStyle = "#1a1a2e"
-
-    // Create a deterministic pattern based on pet data
-    const seed = _data.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
-
-    // Position detection patterns (corners)
-    drawFinderPattern(ctx, 0, 0, moduleSize)
-    drawFinderPattern(ctx, (moduleCount - 7) * moduleSize, 0, moduleSize)
-    drawFinderPattern(ctx, 0, (moduleCount - 7) * moduleSize, moduleSize)
-
-    // Timing patterns
-    for (let i = 8; i < moduleCount - 8; i++) {
-      if (i % 2 === 0) {
-        ctx.fillRect(i * moduleSize, 6 * moduleSize, moduleSize, moduleSize)
-        ctx.fillRect(6 * moduleSize, i * moduleSize, moduleSize, moduleSize)
-      }
-    }
-
-    // Data modules (pseudo-random based on seed)
-    let seedValue = seed
-    for (let row = 0; row < moduleCount; row++) {
-      for (let col = 0; col < moduleCount; col++) {
-        // Skip finder patterns and timing
-        if (isReserved(row, col, moduleCount)) continue
-
-        seedValue = (seedValue * 1103515245 + 12345) & 0x7fffffff
-        if (seedValue % 2 === 0) {
-          ctx.fillRect(col * moduleSize, row * moduleSize, moduleSize, moduleSize)
-        }
-      }
-    }
-  }
-
-  const drawFinderPattern = (
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    moduleSize: number
-  ) => {
-    // Outer black square
-    ctx.fillStyle = "#1a1a2e"
-    ctx.fillRect(x, y, 7 * moduleSize, 7 * moduleSize)
-
-    // Inner white square
-    ctx.fillStyle = "#ffffff"
-    ctx.fillRect(x + moduleSize, y + moduleSize, 5 * moduleSize, 5 * moduleSize)
-
-    // Center black square
-    ctx.fillStyle = "#1a1a2e"
-    ctx.fillRect(x + 2 * moduleSize, y + 2 * moduleSize, 3 * moduleSize, 3 * moduleSize)
-  }
-
-  const isReserved = (row: number, col: number, moduleCount: number): boolean => {
-    // Top-left finder pattern
-    if (row < 9 && col < 9) return true
-    // Top-right finder pattern
-    if (row < 9 && col >= moduleCount - 8) return true
-    // Bottom-left finder pattern
-    if (row >= moduleCount - 8 && col < 9) return true
-    // Timing patterns
-    if (row === 6 || col === 6) return true
-    return false
-  }
-
   const handleDownload = () => {
-    if (!canvasRef.current || !pet) return
-
+    if (!pet) return
+    // Download QR code as image
+    const canvas = document.querySelector("#finzoo-qr-canvas") as HTMLCanvasElement | null
+    if (!canvas) return
     const link = document.createElement("a")
     link.download = `finzoo-${pet.name.toLowerCase()}-qr.png`
-    link.href = canvasRef.current.toDataURL("image/png")
+    link.href = canvas.toDataURL("image/png")
     link.click()
   }
 
@@ -159,13 +65,15 @@ export function QRModal({ pet, isOpen, onClose }: QRModalProps) {
         {/* QR Code */}
         <div className="flex justify-center mb-6">
           <div className="p-4 bg-background rounded-xl border border-border">
-            <canvas
-              ref={canvasRef}
-              className={`transition-opacity duration-300 ${qrGenerated ? "opacity-100" : "opacity-0"}`}
+            <QRCodeCanvas
+              id="finzoo-qr-canvas"
+              value={petUrl}
+              size={200}
+              bgColor="#ffffff"
+              fgColor="#1a1a2e"
+              includeMargin={true}
+              className="transition-opacity duration-300"
             />
-            {!qrGenerated && (
-              <div className="w-[200px] h-[200px] bg-muted animate-pulse rounded" />
-            )}
           </div>
         </div>
 
