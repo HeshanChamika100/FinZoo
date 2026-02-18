@@ -2,15 +2,19 @@
 
 import Image from "next/image"
 import { useLoader } from "@/lib/loader-context"
+import { useAuth } from "@/lib/auth-context"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
 
 export function GlobalLoader() {
    const { isLoading } = useLoader()
+   const { loading: authLoading } = useAuth()
    const imageRef = useRef<HTMLDivElement>(null)
 
+   const showLoader = isLoading || authLoading
+
    useEffect(() => {
-      if (isLoading && imageRef.current) {
+      if (showLoader && imageRef.current) {
          const ctx = gsap.context(() => {
             gsap.fromTo(
                imageRef.current,
@@ -28,9 +32,9 @@ export function GlobalLoader() {
 
          return () => ctx.revert()
       }
-   }, [isLoading])
+   }, [showLoader])
 
-   if (!isLoading) return null
+   if (!showLoader) return null
 
    return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
