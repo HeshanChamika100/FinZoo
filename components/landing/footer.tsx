@@ -69,7 +69,7 @@ export function Footer() {
     <footer id="contact" ref={footerRef} className="bg-foreground text-background" style={{ perspective: "1200px" }}>
       {/* Newsletter section */}
       <div className="border-b border-background/10">
-        <div ref={newsletterRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12" style={{ opacity: 0, transformStyle: "preserve-3d" }}>
+        <div ref={newsletterRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6" style={{ opacity: 0, transformStyle: "preserve-3d" }}>
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div>
               <h3 className="text-2xl font-bold mb-2">Stay in the Loop</h3>
@@ -92,7 +92,7 @@ export function Footer() {
       </div>
 
       {/* Main footer */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div ref={columnsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" style={{ transformStyle: "preserve-3d" }}>
           {/* Brand */}
           <div style={{ opacity: 0 }}>
