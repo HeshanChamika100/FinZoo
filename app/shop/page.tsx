@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 
 export default function ShopPage() {
    const { pets, loading } = usePets()
-   
+
    // Derive unique categories and price range from data
    const categories = useMemo(() => {
       return Array.from(new Set(pets.map((pet) => pet.species))).sort()
@@ -93,7 +93,8 @@ export default function ShopPage() {
                            <SheetHeader>
                               <SheetTitle>Filters</SheetTitle>
                            </SheetHeader>
-                           <div className="py-4">
+                           <div className="p-4">
+
                               <ShopFilters
                                  minPrice={0}
                                  maxPrice={maxPriceLimit}
@@ -102,6 +103,7 @@ export default function ShopPage() {
                                  categories={categories}
                                  selectedCategories={selectedCategories}
                                  setSelectedCategories={setSelectedCategories}
+                                 hideTitle={true}
                               />
                            </div>
                         </SheetContent>

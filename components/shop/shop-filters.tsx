@@ -23,8 +23,10 @@ export function ShopFilters({
    setPriceRange,
    categories,
    selectedCategories,
+
    setSelectedCategories,
-}: ShopFiltersProps) {
+   hideTitle = false,
+}: ShopFiltersProps & { hideTitle?: boolean }) {
    const handleCategoryChange = (category: string, checked: boolean) => {
       if (checked) {
          setSelectedCategories([...selectedCategories, category])
@@ -38,60 +40,62 @@ export function ShopFilters({
    }
 
    return (
-      <div className="space-y-8">
-         <div>
-            <h2 className="text-3xl font-bold text-foreground mb-6">Filters</h2>
+      <div className="space-y-6">
+         {!hideTitle && (
+            <div>
+               <h2 className="text-lg font-bold text-foreground mb-4">Filters</h2>
+            </div>
+         )}
 
-            {/* Price Section */}
-            <div className="space-y-6">
-               <h3 className="text-2xl font-bold text-foreground">Price</h3>
+         {/* Price Section */}
+         <div className="space-y-4">
+            <h3 className="text-base font-semibold text-foreground">Price</h3>
 
-               <Slider
-                  defaultValue={[minPrice, maxPrice]}
-                  max={maxPrice}
-                  min={minPrice}
-                  step={10}
-                  value={priceRange}
-                  onValueChange={(value) => setPriceRange(value as [number, number])}
-                  className="py-4"
-               />
+            <Slider
+               defaultValue={[minPrice, maxPrice]}
+               max={maxPrice}
+               min={minPrice}
+               step={10}
+               value={priceRange}
+               onValueChange={(value) => setPriceRange(value as [number, number])}
+               className="py-2"
+            />
 
-               <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                     <span className="text-sm text-muted-foreground">Rs</span>
-                     <Input
-                        type="number"
-                        value={priceRange[0]}
-                        onChange={(e) => {
-                           const val = Number(e.target.value)
-                           setPriceRange([val, priceRange[1]])
-                        }}
-                        className="w-20 px-2 py-1 h-9 text-center"
-                        min={minPrice}
-                        max={priceRange[1]}
-                     />
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <span className="text-sm text-muted-foreground">Rs</span>
-                     <Input
-                        type="number"
-                        value={priceRange[1]}
-                        onChange={(e) => {
-                           const val = Number(e.target.value)
-                           setPriceRange([priceRange[0], val])
-                        }}
-                        className="w-20 px-2 py-1 h-9 text-center"
-                        min={priceRange[0]}
-                        max={maxPrice}
-                     />
-                  </div>
+            <div className="flex items-center justify-between gap-4">
+               <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Rs</span>
+                  <Input
+                     type="number"
+                     value={priceRange[0]}
+                     onChange={(e) => {
+                        const val = Number(e.target.value)
+                        setPriceRange([val, priceRange[1]])
+                     }}
+                     className="w-20 px-2 py-1 h-8 text-sm text-center"
+                     min={minPrice}
+                     max={priceRange[1]}
+                  />
+               </div>
+               <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Rs</span>
+                  <Input
+                     type="number"
+                     value={priceRange[1]}
+                     onChange={(e) => {
+                        const val = Number(e.target.value)
+                        setPriceRange([priceRange[0], val])
+                     }}
+                     className="w-20 px-2 py-1 h-8 text-sm text-center"
+                     min={priceRange[0]}
+                     max={maxPrice}
+                  />
                </div>
             </div>
          </div>
 
          {/* Category Section */}
          <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-foreground">Category</h3>
+            <h3 className="text-base font-semibold text-foreground">Category</h3>
 
             <div className="space-y-3">
                {categories.map((category) => (
