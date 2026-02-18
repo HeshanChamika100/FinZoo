@@ -4,6 +4,14 @@ import React, { createContext, useContext, useState, useEffect, type ReactNode }
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "./auth-context"
 
+// Color variant type
+export interface ColorVariant {
+  color_name: string
+  color_hex: string
+  images: string[]
+  videos: string[]
+}
+
 // Pet type matching our database schema
 export interface Pet {
   id: string
@@ -20,6 +28,7 @@ export interface Pet {
   in_stock: boolean
   is_visible: boolean
   featured: boolean
+  color_variants: ColorVariant[]
   created_at: string
   updated_at: string
   created_by: string | null

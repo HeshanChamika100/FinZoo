@@ -1,12 +1,13 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useState, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Heart, Share2, Tag, Calendar, Info, Play, MessageCircle } from "lucide-react"
+import { ArrowLeft, Heart, Share2, Tag, Calendar, Info, Play, MessageCircle, Palette } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { usePets } from "@/lib/pets-context"
+import type { ColorVariant } from "@/lib/pets-context"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
 import { useRouter } from "next/navigation"
@@ -23,11 +24,32 @@ export default function PetDetailPage({
   const [isLiked, setIsLiked] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)
+  const [selectedColor, setSelectedColor] = useState<number | null>(null)
 
-  // Combine all images — use images array if available, fallback to single image
-  const allImages = pet
-    ? (pet.images && pet.images.length > 0 ? pet.images : (pet.image ? [pet.image] : []))
-    : []
+  // Parse color variants
+  const colorVariants = useMemo(() => {
+    if (!pet) return []
+    const variants = (pet.color_variants || []) as ColorVariant[]
+    return variants.filter(v => v.color_name && (v.images.length > 0 || v.videos.length > 0))
+  }, [pet])
+
+  // Determine which images/videos to show based on selected color
+  const { displayImages, displayVideos } = useMemo(() => {
+    if (!pet) return { displayImages: [], displayVideos: [] }
+
+    if (selectedColor !== null && colorVariants[selectedColor]) {
+      const variant = colorVariants[selectedColor]
+      return {
+        displayImages: variant.images.length > 0 ? variant.images : [],
+        displayVideos: variant.videos || [],
+      }
+    }
+
+    // Default: show pet's main images/videos
+    const images = pet.images && pet.images.length > 0 ? pet.images : (pet.image ? [pet.image] : [])
+    const videos = pet.videos && pet.videos.length > 0 ? pet.videos : (pet.video ? [pet.video] : [])
+    return { displayImages: images, displayVideos: videos }
+  }, [pet, selectedColor, colorVariants])
 
   if (!pet) {
     return (
@@ -94,16 +116,24 @@ export default function PetDetailPage({
           {/* Images */}
           <div className="space-y-4">
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
-              <Image
-                src={allImages[selectedImage] || "/placeholder.svg"}
-                alt={pet.breed}
-                fill
-                className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-                onLoad={() => setImageLoaded(true)}
-                priority
-              />
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-muted animate-pulse" />
+              {displayImages.length > 0 ? (
+                <>
+                  <Image
+                    src={displayImages[selectedImage] || "/placeholder.svg"}
+                    alt={pet.breed}
+                    fill
+                    className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                    onLoad={() => setImageLoaded(true)}
+                    priority
+                  />
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 bg-muted animate-pulse" />
+                  )}
+                </>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                  <p className="text-sm">No images for this color</p>
+                </div>
               )}
 
               {/* Status badges */}
@@ -117,19 +147,19 @@ export default function PetDetailPage({
               </div>
 
               {/* Image counter */}
-              {allImages.length > 1 && (
+              {displayImages.length > 1 && (
                 <div className="absolute bottom-4 right-4">
                   <Badge variant="secondary" className="bg-black/60 text-white border-0">
-                    {selectedImage + 1} / {allImages.length}
+                    {selectedImage + 1} / {displayImages.length}
                   </Badge>
                 </div>
               )}
             </div>
 
             {/* Thumbnail strip */}
-            {allImages.length > 1 && (
+            {displayImages.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
-                {allImages.map((img, index) => (
+                {displayImages.map((img, index) => (
                   <button
                     key={index}
                     type="button"
@@ -154,11 +184,11 @@ export default function PetDetailPage({
               </div>
             )}
 
-            {/* Video */}
-            {pet.video && (
-              <div className="rounded-2xl overflow-hidden border border-border bg-black">
+            {/* Videos */}
+            {displayVideos.length > 0 && displayVideos.map((videoUrl, index) => (
+              <div key={index} className="rounded-2xl overflow-hidden border border-border bg-black">
                 <video
-                  src={pet.video}
+                  src={videoUrl}
                   controls
                   preload="metadata"
                   className="w-full rounded-2xl"
@@ -167,7 +197,7 @@ export default function PetDetailPage({
                   Your browser does not support the video tag.
                 </video>
               </div>
-            )}
+            ))}
           </div>
 
           {/* Details */}
@@ -180,6 +210,51 @@ export default function PetDetailPage({
 
             <h1 className="text-3xl font-bold text-foreground mb-2">{pet.breed}</h1>
             <p className="text-lg text-muted-foreground mb-4">{pet.species}</p>
+
+            {/* Color Swatches */}
+            {colorVariants.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm text-muted-foreground">Color:</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {selectedColor !== null ? colorVariants[selectedColor].color_name : "Default"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Default swatch */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedColor(null)
+                      setSelectedImage(0)
+                      setImageLoaded(false)
+                    }}
+                    className={`relative h-9 w-9 rounded-full border-2 transition-all bg-gradient-to-br from-gray-200 to-gray-400 ${selectedColor === null
+                      ? "border-primary ring-2 ring-primary/30 scale-110"
+                      : "border-border hover:scale-105"
+                      }`}
+                    title="Default"
+                  />
+                  {colorVariants.map((variant, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setSelectedColor(index)
+                        setSelectedImage(0)
+                        setImageLoaded(false)
+                      }}
+                      className={`relative h-9 w-9 rounded-full border-2 transition-all ${selectedColor === index
+                        ? "border-primary ring-2 ring-primary/30 scale-110"
+                        : "border-border hover:scale-105"
+                        }`}
+                      style={{ backgroundColor: variant.color_hex }}
+                      title={variant.color_name}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 mb-6">
               <Tag className="h-5 w-5 text-primary" />
@@ -219,6 +294,7 @@ export default function PetDetailPage({
                       `Species: ${pet.species}\n` +
                       `Breed: ${pet.breed}\n` +
                       `Age: ${pet.age}\n` +
+                      (selectedColor !== null ? `Color: ${colorVariants[selectedColor].color_name}\n` : '') +
                       `Price: Rs. ${pet.price.toLocaleString()} /${pet.price_type === 'pair' ? 'pair' : 'each'}\n\n` +
                       `Could you please share more details?`
                     )}`}
@@ -248,3 +324,4 @@ export default function PetDetailPage({
     </div>
   )
 }
+

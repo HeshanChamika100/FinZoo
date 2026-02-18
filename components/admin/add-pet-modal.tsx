@@ -12,6 +12,10 @@ import {
   FileText,
   Settings,
   Sparkles,
+  Palette,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,10 +35,21 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { usePets } from "@/lib/pets-context"
+import type { ColorVariant } from "@/lib/pets-context"
 import { uploadPetImage } from "@/components/admin/image-upload"
 import { MultiImageUpload } from "@/components/admin/multi-image-upload"
 import { MultiVideoUpload } from "@/components/admin/multi-video-upload"
 import { uploadPetVideo } from "@/components/admin/video-upload"
+
+interface VariantFormState {
+  color_name: string
+  color_hex: string
+  existingImages: string[]
+  pendingImageFiles: File[]
+  existingVideos: string[]
+  pendingVideoFiles: File[]
+  expanded: boolean
+}
 
 interface AddPetModalProps {
   isOpen: boolean
@@ -72,6 +87,8 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     is_visible: true,
     featured: false,
   })
+
+  const [colorVariants, setColorVariants] = useState<VariantFormState[]>([])
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -140,6 +157,7 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         in_stock: formData.in_stock,
         is_visible: formData.is_visible,
         featured: formData.featured,
+        color_variants: await buildColorVariants(),
       })
 
       resetForm()
@@ -163,10 +181,62 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     setExistingImageUrls([])
     setPendingVideoFiles([])
     setExistingVideoUrls([])
+    setColorVariants([])
     setErrors({})
     setSubmitError(null)
     setImageError(null)
     setVideoError(null)
+  }
+
+  // ── Color variant helpers ──
+  const addColorVariant = () => {
+    setColorVariants(prev => [
+      ...prev,
+      {
+        color_name: "",
+        color_hex: "#6366f1",
+        existingImages: [],
+        pendingImageFiles: [],
+        existingVideos: [],
+        pendingVideoFiles: [],
+        expanded: true,
+      },
+    ])
+  }
+
+  const removeColorVariant = (index: number) => {
+    setColorVariants(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateVariant = (index: number, updates: Partial<VariantFormState>) => {
+    setColorVariants(prev => prev.map((v, i) => (i === index ? { ...v, ...updates } : v)))
+  }
+
+  const buildColorVariants = async (): Promise<ColorVariant[]> => {
+    const result: ColorVariant[] = []
+    for (const variant of colorVariants) {
+      if (!variant.color_name.trim()) continue
+
+      const images = [...variant.existingImages]
+      if (variant.pendingImageFiles.length > 0) {
+        const uploaded = await Promise.all(variant.pendingImageFiles.map(f => uploadPetImage(f)))
+        images.push(...uploaded)
+      }
+
+      const videos = [...variant.existingVideos]
+      if (variant.pendingVideoFiles.length > 0) {
+        const uploaded = await Promise.all(variant.pendingVideoFiles.map(f => uploadPetVideo(f)))
+        videos.push(...uploaded)
+      }
+
+      result.push({
+        color_name: variant.color_name.trim(),
+        color_hex: variant.color_hex,
+        images,
+        videos,
+      })
+    }
+    return result
   }
 
   const handleClose = () => {
@@ -429,6 +499,142 @@ export function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                   />
                 </label>
               </div>
+            </div>
+
+            {/* ── Section 5: Color Variants ── */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Palette className="h-4 w-4 text-primary" />
+                  Color Variants
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addColorVariant}
+                  className="h-7 text-xs gap-1 border-primary/30 text-primary hover:bg-primary/10"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add Color
+                </Button>
+              </div>
+
+              {colorVariants.length === 0 ? (
+                <div className="bg-muted/30 rounded-xl p-6 border border-border/50 text-center">
+                  <Palette className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No color variants added yet</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">Add colors to show different images/videos per color</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {colorVariants.map((variant, index) => (
+                    <div
+                      key={index}
+                      className="bg-muted/30 rounded-xl border border-border/50 overflow-hidden"
+                    >
+                      {/* Variant Header */}
+                      <div
+                        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => updateVariant(index, { expanded: !variant.expanded })}
+                      >
+                        <div
+                          className="h-7 w-7 rounded-full border-2 border-border shrink-0"
+                          style={{ backgroundColor: variant.color_hex }}
+                        />
+                        <span className="text-sm font-medium text-foreground flex-1">
+                          {variant.color_name || `Color ${index + 1}`}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {variant.existingImages.length + variant.pendingImageFiles.length} img · {variant.existingVideos.length + variant.pendingVideoFiles.length} vid
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+                          onClick={(e) => { e.stopPropagation(); removeColorVariant(index) }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                        {variant.expanded ? (
+                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+
+                      {/* Variant Details */}
+                      {variant.expanded && (
+                        <div className="px-4 pb-4 space-y-4 border-t border-border/50">
+                          <div className="grid grid-cols-2 gap-3 pt-3">
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                Color Name *
+                              </Label>
+                              <Input
+                                value={variant.color_name}
+                                onChange={(e) => updateVariant(index, { color_name: e.target.value })}
+                                placeholder="e.g., Red, Blue"
+                                className="bg-background border-input h-9"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                Color
+                              </Label>
+                              <div className="flex gap-2 items-center">
+                                <input
+                                  type="color"
+                                  value={variant.color_hex}
+                                  onChange={(e) => updateVariant(index, { color_hex: e.target.value })}
+                                  className="h-9 w-12 rounded-lg border border-input cursor-pointer bg-background p-0.5"
+                                />
+                                <Input
+                                  value={variant.color_hex}
+                                  onChange={(e) => updateVariant(index, { color_hex: e.target.value })}
+                                  placeholder="#000000"
+                                  className="bg-background border-input h-9 font-mono text-xs flex-1"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Variant Images */}
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Images</Label>
+                            <MultiImageUpload
+                              existingImages={variant.existingImages}
+                              onChange={({ existingImages, pendingFiles }) => {
+                                updateVariant(index, {
+                                  existingImages,
+                                  pendingImageFiles: pendingFiles,
+                                })
+                              }}
+                              disabled={isSubmitting}
+                            />
+                          </div>
+
+                          {/* Variant Videos */}
+                          <div className="space-y-2">
+                            <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Videos</Label>
+                            <MultiVideoUpload
+                              existingVideos={variant.existingVideos}
+                              onChange={({ existingVideos, pendingFiles }) => {
+                                updateVariant(index, {
+                                  existingVideos,
+                                  pendingVideoFiles: pendingFiles,
+                                })
+                              }}
+                              disabled={isSubmitting}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Submit Error */}
