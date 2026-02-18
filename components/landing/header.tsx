@@ -8,6 +8,7 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { usePets } from "@/lib/pets-context"
+import { useLoader } from "@/lib/loader-context"
 import gsap from "gsap"
 
 interface HeaderProps {
@@ -28,6 +29,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
   const searchRef = useRef<HTMLDivElement>(null)
   const mobileSearchRef = useRef<HTMLDivElement>(null)
   const { pets } = usePets()
+  const { startLoading } = useLoader()
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -59,6 +61,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
     return () => ctx.revert()
   }, [])
 
+  // ... existing scroll, scrollTo, search logic ...
   // Detect scroll position to change header style
   useEffect(() => {
     // Skip scroll detection for white variant
@@ -130,6 +133,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
     setSearchQuery("")
     setShowSearchResults(false)
     setMobileSearchOpen(false)
+    startLoading()
     router.push(`/pets/${petId}`)
   }
 
@@ -228,6 +232,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
               href="/shop"
               className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
+              onClick={() => startLoading()}
             >
               Shop
             </Link>
@@ -253,7 +258,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
               Contact
             </button>
             <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25">
-              <Link href="/shop">Browse All</Link>
+              <Link href="/shop" onClick={() => startLoading()}>Browse All</Link>
             </Button>
           </div>
 
@@ -363,7 +368,10 @@ export function Header({ variant = 'default' }: HeaderProps) {
                 href="/shop"
                 className={`hover:text-primary transition-colors px-2 py-2 ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
                   }`}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  startLoading()
+                }}
               >
                 Shop
               </Link>
@@ -389,7 +397,10 @@ export function Header({ variant = 'default' }: HeaderProps) {
                 Contact
               </button>
               <Button asChild className="bg-primary text-primary-foreground w-1/2 mx-auto">
-                <Link href="/shop" onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/shop" onClick={() => {
+                  setMobileMenuOpen(false)
+                  startLoading()
+                }}>
                   Browse All
                 </Link>
               </Button>
