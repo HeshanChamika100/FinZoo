@@ -389,10 +389,13 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
             </div>
 
             {/* ── MOBILE LAYOUT (< md) ── */}
-            <div className="md:hidden">
-               {!isSignup ? (
-                  /* ── Mobile Sign In ── */
-                  <div className="px-8 py-10">
+            <div className="md:hidden overflow-hidden">
+               <div
+                  className="flex w-[200%] transition-transform duration-600 ease-in-out"
+                  style={{ transform: isSignup ? "translateX(-50%)" : "translateX(0)" }}
+               >
+                  {/* ── Mobile Sign In ── */}
+                  <div className="w-1/2 shrink-0 px-8 py-10">
                      <div className="flex flex-col items-center mb-6">
                         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md ring-1 ring-gray-100">
                            <img src="/logo.png" alt="FinZoo" className="h-9 w-9" />
@@ -431,9 +434,9 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                      </p>
                      <p className="mt-3 text-center text-[11px] text-gray-400"><span className="font-medium text-gray-500">Note:</span> New admin accounts require approval.</p>
                   </div>
-               ) : (
-                  /* ── Mobile Sign Up ── */
-                  <div className="px-8 py-10">
+
+                  {/* ── Mobile Sign Up ── */}
+                  <div className="w-1/2 shrink-0 px-8 py-10">
                      <div className="flex flex-col items-center mb-6">
                         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md ring-1 ring-gray-100">
                            <img src="/logo.png" alt="FinZoo" className="h-9 w-9" />
@@ -473,7 +476,7 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                         <button type="button" onClick={() => setIsSignup(false)} className="font-semibold text-purple-600 hover:text-purple-500">Sign In</button>
                      </p>
                   </div>
-               )}
+               </div>
             </div>
 
          </div>
