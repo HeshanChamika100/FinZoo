@@ -26,12 +26,15 @@ import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
 import { useRouter } from "next/navigation"
 
+import { useToast } from "@/components/ui/use-toast"
+
 export default function PetDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const router = useRouter()
+  const { toast } = useToast()
   const { id } = use(params)
   const { getPetById } = usePets()
   const pet = getPetById(id)
@@ -42,6 +45,30 @@ export default function PetDetailPage({
 
   // Lightbox state
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+
+  const handleShare = async () => {
+    if (!pet) return
+
+    const shareData = {
+      title: `${pet.breed} - FinZoo`,
+      text: `Check out this ${pet.breed} on FinZoo!`,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else {
+        await navigator.clipboard.writeText(window.location.href)
+        toast({
+          title: "Link copied",
+          description: "Pet link copied to clipboard",
+        })
+      }
+    } catch (err) {
+      console.error("Error sharing:", err)
+    }
+  }
 
   // Parse color variants
   const colorVariants = useMemo(() => {
@@ -152,7 +179,7 @@ export default function PetDetailPage({
                   className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
                 />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleShare}>
                 <Share2 className="h-5 w-5 text-muted-foreground" />
               </Button>
             </div>
