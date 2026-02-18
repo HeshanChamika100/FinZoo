@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Pet } from "@/lib/pets-context"
 import { useState } from "react"
-import { stripMarkdown } from "@/lib/utils"
 
 interface PetCardProps {
   pet: Pet
