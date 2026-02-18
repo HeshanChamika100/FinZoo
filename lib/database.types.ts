@@ -25,6 +25,7 @@ export interface Database {
           in_stock: boolean
           is_visible: boolean
           featured: boolean
+          color_variants: Json
           created_at: string
           updated_at: string
           created_by: string | null
@@ -44,6 +45,7 @@ export interface Database {
           in_stock?: boolean
           is_visible?: boolean
           featured?: boolean
+          color_variants?: Json
           created_at?: string
           updated_at?: string
           created_by?: string | null
@@ -63,6 +65,7 @@ export interface Database {
           in_stock?: boolean
           is_visible?: boolean
           featured?: boolean
+          color_variants?: Json
           created_at?: string
           updated_at?: string
           created_by?: string | null

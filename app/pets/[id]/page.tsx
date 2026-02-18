@@ -1,15 +1,32 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useState, useMemo, useEffect, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Heart, Share2, Tag, Calendar, Info, Play, MessageCircle } from "lucide-react"
+import {
+  ArrowLeft,
+  Heart,
+  Share2,
+  Tag,
+  Calendar,
+  Info,
+  MessageCircle,
+  Palette,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { usePets } from "@/lib/pets-context"
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
+import type { ColorVariant } from "@/lib/pets-context"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
 import { useRouter } from "next/navigation"
+
+import { useToast } from "@/components/ui/use-toast"
 
 export default function PetDetailPage({
   params,
@@ -17,17 +34,98 @@ export default function PetDetailPage({
   params: Promise<{ id: string }>
 }) {
   const router = useRouter()
+  const { toast } = useToast()
   const { id } = use(params)
   const { getPetById } = usePets()
   const pet = getPetById(id)
   const [isLiked, setIsLiked] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)
+  const [selectedColor, setSelectedColor] = useState<number | null>(null)
 
-  // Combine all images — use images array if available, fallback to single image
-  const allImages = pet
-    ? (pet.images && pet.images.length > 0 ? pet.images : (pet.image ? [pet.image] : []))
-    : []
+  // Lightbox state
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+
+  const handleShare = async () => {
+    if (!pet) return
+
+    const shareData = {
+      title: `${pet.breed} - FinZoo`,
+      text: `Check out this ${pet.breed} on FinZoo!`,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else {
+        await navigator.clipboard.writeText(window.location.href)
+        toast({
+          title: "Link copied",
+          description: "Pet link copied to clipboard",
+        })
+      }
+    } catch (err) {
+      console.error("Error sharing:", err)
+    }
+  }
+
+  // Parse color variants
+  const colorVariants = useMemo(() => {
+    if (!pet) return []
+    const variants = (pet.color_variants || []) as ColorVariant[]
+    return variants.filter(v => v.color_name && (v.images.length > 0 || v.videos.length > 0))
+  }, [pet])
+
+  // Determine which images/videos to show based on selected color
+  const { displayImages, displayVideos } = useMemo(() => {
+    if (!pet) return { displayImages: [], displayVideos: [] }
+
+    if (selectedColor !== null && colorVariants[selectedColor]) {
+      const variant = colorVariants[selectedColor]
+      return {
+        displayImages: variant.images.length > 0 ? variant.images : [],
+        displayVideos: variant.videos || [],
+      }
+    }
+
+    // Default: show pet's main images/videos
+    const images = pet.images && pet.images.length > 0 ? pet.images : (pet.image ? [pet.image] : [])
+    const videos = pet.videos && pet.videos.length > 0 ? pet.videos : (pet.video ? [pet.video] : [])
+    return { displayImages: images, displayVideos: videos }
+  }, [pet, selectedColor, colorVariants])
+
+  // Handle keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return
+
+      switch (e.key) {
+        case "Escape":
+          setIsLightboxOpen(false)
+          break
+        case "ArrowLeft":
+          setSelectedImage(prev => (prev > 0 ? prev - 1 : displayImages.length - 1))
+          break
+        case "ArrowRight":
+          setSelectedImage(prev => (prev < displayImages.length - 1 ? prev + 1 : 0))
+          break
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    // Lock body scroll when lightbox is open
+    if (isLightboxOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "unset"
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      document.body.style.overflow = "unset"
+    }
+  }, [isLightboxOpen, displayImages.length])
 
   if (!pet) {
     return (
@@ -81,7 +179,7 @@ export default function PetDetailPage({
                   className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
                 />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleShare}>
                 <Share2 className="h-5 w-5 text-muted-foreground" />
               </Button>
             </div>
@@ -93,21 +191,38 @@ export default function PetDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
-              <Image
-                src={allImages[selectedImage] || "/placeholder.svg"}
-                alt={pet.breed}
-                fill
-                className={`object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-                onLoad={() => setImageLoaded(true)}
-                priority
-              />
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-muted animate-pulse" />
+            <div
+              className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-zoom-in group"
+              onClick={() => displayImages.length > 0 && setIsLightboxOpen(true)}
+            >
+              {displayImages.length > 0 ? (
+                <>
+                  <Image
+                    src={displayImages[selectedImage] || "/placeholder.svg"}
+                    alt={pet.breed}
+                    fill
+                    className={`object-cover transition-all duration-500 group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                    onLoad={() => setImageLoaded(true)}
+                    priority
+                  />
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 bg-muted animate-pulse" />
+                  )}
+                  {/* Hover overlay hint */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="bg-background/80 backdrop-blur-sm rounded-full p-3 shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                      <ZoomIn className="h-6 w-6 text-foreground" />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                  <p className="text-sm">No images for this color</p>
+                </div>
               )}
 
               {/* Status badges */}
-              <div className="absolute top-4 left-4 flex flex-col gap-2">
+              <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
                 {pet.featured && (
                   <Badge className="bg-primary text-primary-foreground">Featured</Badge>
                 )}
@@ -117,19 +232,19 @@ export default function PetDetailPage({
               </div>
 
               {/* Image counter */}
-              {allImages.length > 1 && (
-                <div className="absolute bottom-4 right-4">
+              {displayImages.length > 1 && (
+                <div className="absolute bottom-4 right-4 pointer-events-none">
                   <Badge variant="secondary" className="bg-black/60 text-white border-0">
-                    {selectedImage + 1} / {allImages.length}
+                    {selectedImage + 1} / {displayImages.length}
                   </Badge>
                 </div>
               )}
             </div>
 
             {/* Thumbnail strip */}
-            {allImages.length > 1 && (
+            {displayImages.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
-                {allImages.map((img, index) => (
+                {displayImages.map((img, index) => (
                   <button
                     key={index}
                     type="button"
@@ -154,11 +269,11 @@ export default function PetDetailPage({
               </div>
             )}
 
-            {/* Video */}
-            {pet.video && (
-              <div className="rounded-2xl overflow-hidden border border-border bg-black">
+            {/* Videos */}
+            {displayVideos.length > 0 && displayVideos.map((videoUrl, index) => (
+              <div key={index} className="rounded-2xl overflow-hidden border border-border bg-black">
                 <video
-                  src={pet.video}
+                  src={videoUrl}
                   controls
                   preload="metadata"
                   className="w-full rounded-2xl"
@@ -167,7 +282,7 @@ export default function PetDetailPage({
                   Your browser does not support the video tag.
                 </video>
               </div>
-            )}
+            ))}
           </div>
 
           {/* Details */}
@@ -180,6 +295,51 @@ export default function PetDetailPage({
 
             <h1 className="text-3xl font-bold text-foreground mb-2">{pet.breed}</h1>
             <p className="text-lg text-muted-foreground mb-4">{pet.species}</p>
+
+            {/* Color Swatches */}
+            {colorVariants.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm text-muted-foreground">Color:</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {selectedColor !== null ? colorVariants[selectedColor].color_name : "Default"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Default swatch */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedColor(null)
+                      setSelectedImage(0)
+                      setImageLoaded(false)
+                    }}
+                    className={`relative h-9 w-9 rounded-full border-2 transition-all bg-gradient-to-br from-gray-200 to-gray-400 ${selectedColor === null
+                      ? "border-primary ring-2 ring-primary/30 scale-110"
+                      : "border-border hover:scale-105"
+                      }`}
+                    title="Default"
+                  />
+                  {colorVariants.map((variant, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setSelectedColor(index)
+                        setSelectedImage(0)
+                        setImageLoaded(false)
+                      }}
+                      className={`relative h-9 w-9 rounded-full border-2 transition-all ${selectedColor === index
+                        ? "border-primary ring-2 ring-primary/30 scale-110"
+                        : "border-border hover:scale-105"
+                        }`}
+                      style={{ backgroundColor: variant.color_hex }}
+                      title={variant.color_name}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 mb-6">
               <Tag className="h-5 w-5 text-primary" />
@@ -199,8 +359,8 @@ export default function PetDetailPage({
               <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
                 <Info className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <div className="text-sm text-muted-foreground">About</div>
-                  <div className="text-foreground">{pet.description}</div>
+                  <div className="text-sm text-muted-foreground mb-1">About</div>
+                  <MarkdownRenderer content={pet.description || ""} />
                 </div>
               </div>
             </div>
@@ -219,6 +379,7 @@ export default function PetDetailPage({
                       `Species: ${pet.species}\n` +
                       `Breed: ${pet.breed}\n` +
                       `Age: ${pet.age}\n` +
+                      (selectedColor !== null ? `Color: ${colorVariants[selectedColor].color_name}\n` : '') +
                       `Price: Rs. ${pet.price.toLocaleString()} /${pet.price_type === 'pair' ? 'pair' : 'each'}\n\n` +
                       `Could you please share more details?`
                     )}`}
@@ -245,6 +406,70 @@ export default function PetDetailPage({
         </div>
       </main>
       <Footer />
+
+      {/* Lightbox */}
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center">
+          {/* Top Bar */}
+          <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10">
+            <Badge variant="secondary" className="bg-muted text-foreground text-sm px-3 py-1">
+              {selectedImage + 1} / {displayImages.length}
+            </Badge>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full hover:bg-muted"
+              onClick={() => setIsLightboxOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+
+          {/* Navigation - Left */}
+          {displayImages.length > 1 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-4 z-10 rounded-full bg-background/50 hover:bg-background border border-border h-12 w-12 hidden sm:flex"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedImage(prev => (prev > 0 ? prev - 1 : displayImages.length - 1))
+              }}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+          )}
+
+          {/* Main Image */}
+          <div className="relative w-full h-full max-w-7xl max-h-[85vh] mx-auto p-4 flex items-center justify-center">
+            <div className="relative w-full h-full">
+              <Image
+                src={displayImages[selectedImage] || "/placeholder.svg"}
+                alt={pet.breed}
+                fill
+                className="object-contain"
+                priority
+                unoptimized
+              />
+            </div>
+          </div>
+
+          {/* Navigation - Right */}
+          {displayImages.length > 1 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 z-10 rounded-full bg-background/50 hover:bg-background border border-border h-12 w-12 hidden sm:flex"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedImage(prev => (prev < displayImages.length - 1 ? prev + 1 : 0))
+              }}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

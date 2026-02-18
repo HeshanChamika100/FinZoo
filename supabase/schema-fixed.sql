@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS public.pets (
   in_stock BOOLEAN DEFAULT true,
   is_visible BOOLEAN DEFAULT true,
   featured BOOLEAN DEFAULT false,
+  color_variants JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   created_by UUID REFERENCES public.profiles(id)
@@ -229,20 +230,6 @@ CREATE POLICY "Admin users can delete pet images"
     )
   );
 
--- ============================================
--- SEED DATA (Initial pets)
--- ============================================
-INSERT INTO public.pets (name, species, breed, age, price, image, description, in_stock, is_visible, featured)
-VALUES
-  ('Goldie', 'Fish', 'Goldfish', '6 months', 15.00, 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?w=400&h=300&fit=crop', 'A beautiful golden companion for your aquarium. Goldie is healthy and active.', true, true, true),
-  ('Max', 'Dog', 'Golden Retriever', '2 years', 800.00, 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop', 'Friendly and loyal Golden Retriever. Great with kids and other pets.', true, true, true),
-  ('Whiskers', 'Cat', 'Persian', '1 year', 450.00, 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop', 'Elegant Persian cat with a calm and affectionate personality.', true, true, true),
-  ('Tweety', 'Bird', 'Canary', '8 months', 75.00, 'https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?w=400&h=300&fit=crop', 'Bright yellow canary with a beautiful singing voice.', true, true, false),
-  ('Hoppy', 'Rabbit', 'Holland Lop', '4 months', 120.00, 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&h=300&fit=crop', 'Adorable Holland Lop bunny with floppy ears and a sweet temperament.', false, true, true),
-  ('Nemo', 'Fish', 'Clownfish', '1 year', 35.00, 'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=400&h=300&fit=crop', 'Vibrant clownfish perfect for saltwater aquariums.', true, true, false),
-  ('Shell', 'Turtle', 'Red-Eared Slider', '3 years', 85.00, 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop', 'Friendly turtle that loves basking in the sun.', true, true, false),
-  ('Buddy', 'Dog', 'Labrador', '1 year', 750.00, 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400&h=300&fit=crop', 'Energetic Labrador puppy ready for adventure.', true, true, true)
-ON CONFLICT DO NOTHING;
 
 -- ============================================
 -- Manually add profile for existing user

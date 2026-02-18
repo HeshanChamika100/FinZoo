@@ -1,8 +1,13 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useRef, useCallback, type ReactNode } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js"
+
+const INACTIVITY_EXPIRY_MS = 60 * 60 * 1000 // 1 hour of inactivity
+const INACTIVITY_CHECK_INTERVAL_MS = 60 * 1000 // Check every 60 seconds
+const LAST_ACTIVITY_KEY = "finzoo_last_activity"
+const ACTIVITY_EVENTS = ["mousemove", "keydown", "click", "scroll", "touchstart"] as const
 
 interface Profile {
   id: string
@@ -84,14 +89,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Update the last activity timestamp (throttled to avoid excessive writes)
+  const lastActivityWriteRef = useRef(0)
+  const updateLastActivity = useCallback(() => {
+    const now = Date.now()
+    // Only write to localStorage at most once every 30 seconds to avoid performance issues
+    if (now - lastActivityWriteRef.current > 30_000) {
+      localStorage.setItem(LAST_ACTIVITY_KEY, now.toString())
+      lastActivityWriteRef.current = now
+    }
+  }, [])
+
+  // Check if the user has been inactive for longer than the expiry duration
+  const isInactive = (): boolean => {
+    const lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY)
+    if (!lastActivity) return false
+    const elapsed = Date.now() - parseInt(lastActivity, 10)
+    return elapsed >= INACTIVITY_EXPIRY_MS
+  }
+
+  // Force logout when inactive for too long
+  const handleInactivityExpiry = async () => {
+    if (isInactive()) {
+      console.log("Session expired due to 1 hour of inactivity — logging out")
+      localStorage.removeItem(LAST_ACTIVITY_KEY)
+      setUser(null)
+      setProfile(null)
+      await supabase.auth.signOut()
+      window.location.href = "/admin/login"
+    }
+  }
+
   useEffect(() => {
     // Check for existing session on mount
     const initializeAuth = async () => {
       try {
+        // Check if user has been inactive too long before restoring session
+        if (isInactive()) {
+          console.log("Inactive too long — clearing session on mount")
+          localStorage.removeItem(LAST_ACTIVITY_KEY)
+          await supabase.auth.signOut()
+          setLoading(false)
+          return
+        }
+
         const { data: { session } } = await supabase.auth.getSession()
         setUser(session?.user ?? null)
 
         if (session?.user) {
+          // User is active right now (they just opened the page)
+          updateLastActivity()
           fetchProfile(session.user.id)
         }
       } catch (error) {
@@ -102,6 +149,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     initializeAuth()
+
+    // Periodically check for inactivity expiry
+    const expiryInterval = setInterval(handleInactivityExpiry, INACTIVITY_CHECK_INTERVAL_MS)
+
+    // Listen for user activity to reset the inactivity timer
+    ACTIVITY_EVENTS.forEach((event) => {
+      window.addEventListener(event, updateLastActivity, { passive: true })
+    })
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -116,6 +171,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       subscription.unsubscribe()
+      clearInterval(expiryInterval)
+      ACTIVITY_EVENTS.forEach((event) => {
+        window.removeEventListener(event, updateLastActivity)
+      })
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -147,6 +206,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null)
           return { success: false, error: "Your account is pending approval by an administrator. Please wait until an existing admin approves your account." }
         }
+
+        // Record initial activity timestamp for inactivity tracking
+        localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString())
       }
 
       return { success: true }
@@ -206,6 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      localStorage.removeItem(LAST_ACTIVITY_KEY)
       setUser(null)
       setProfile(null)
       await supabase.auth.signOut()

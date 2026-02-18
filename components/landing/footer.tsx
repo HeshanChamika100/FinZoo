@@ -247,6 +247,31 @@ export function Footer() {
                 </a>
               </li>
             </ul>
+
+            {/* Map */}
+            <a
+              href="https://www.google.com/maps/dir/?api=1&destination=6.838385,80.085175"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-6 block overflow-hidden rounded-xl border border-background/10 relative cursor-pointer"
+            >
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0!2d80.085175!3d6.838385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwNTAnMTguMiJOIDgwwrAwNScwNi42IkU!5e0!3m2!1sen!2slk!4v1700000000000"
+                width="100%"
+                height="180"
+                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(1.1) contrast(1.1)", pointerEvents: "none" }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="FinZoo Location"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
+                <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/90 px-4 py-2 rounded-full flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Get Directions
+                </span>
+              </div>
+            </a>
           </div>
         </div>
       </div>

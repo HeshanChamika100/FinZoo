@@ -177,7 +177,7 @@ export function FeaturedPets() {
             ))
           ) : (
             filteredPets.map((pet, index) => (
-              <div key={pet.id} className="pet-card-wrapper" style={{ opacity: 0 }}>
+              <div key={pet.id} className="pet-card-wrapper h-full" style={{ opacity: 0 }}>
                 <PetCard pet={pet} index={index} />
               </div>
             ))

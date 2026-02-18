@@ -50,6 +50,7 @@ export default function AdminDashboard() {
   const [addPetModalOpen, setAddPetModalOpen] = useState(false)
   const [editPetModalOpen, setEditPetModalOpen] = useState(false)
   const [editingPet, setEditingPet] = useState<Pet | null>(null)
+  const [logoutConfirm, setLogoutConfirm] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -148,7 +149,7 @@ export default function AdminDashboard() {
                 onClick={() => setAddPetModalOpen(true)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Add Pet</span>
               </Button>
               <Link href="/admin/users">
@@ -157,17 +158,17 @@ export default function AdminDashboard() {
                   variant="outline"
                   className="border-border"
                 >
-                  <Users className="h-4 w-4 mr-2" />
+                  <Users className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Users</span>
                 </Button>
               </Link>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={logout}
+                onClick={() => setLogoutConfirm(true)}
                 className="border-border hover:bg-destructive hover:text-destructive-foreground"
               >
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
@@ -356,6 +357,44 @@ export default function AdminDashboard() {
           setEditingPet(null)
         }}
       />
+
+      {/* Logout Confirmation Modal */}
+      {logoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setLogoutConfirm(false)}
+          />
+          <div className="relative z-10 w-full max-w-sm mx-4 animate-in zoom-in-95 slide-in-from-bottom-4 fade-in duration-300">
+            <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500" />
+              <div className="p-6">
+                <div className="flex justify-center mb-5">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-xl" />
+                    <div className="relative h-16 w-16 rounded-full bg-amber-500/10 border-2 border-amber-500/20 flex items-center justify-center">
+                      <LogOut className="h-7 w-7 text-amber-500" />
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-card-foreground text-center mb-2">Logout</h3>
+                <p className="text-sm text-muted-foreground text-center mb-6">
+                  Are you sure you want to log out of the admin panel?
+                </p>
+                <div className="flex gap-3">
+                  <Button variant="outline" className="flex-1 border-border" onClick={() => setLogoutConfirm(false)}>
+                    Cancel
+                  </Button>
+                  <Button className="flex-1 bg-amber-600 text-white hover:bg-amber-700 border-0" onClick={logout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

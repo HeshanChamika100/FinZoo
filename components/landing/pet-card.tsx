@@ -21,14 +21,14 @@ export function PetCard({ pet, index }: PetCardProps) {
   const coverImage = pet.images?.[0] || pet.image || "/placeholder.svg"
 
   return (
-    <Link href={`/pets/${pet.id}`} className="block">
+    <Link href={`/pets/${pet.id}`} className="block h-full">
       <Card
-        className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 cursor-pointer p-0"
+        className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 cursor-pointer p-0 h-full flex flex-col"
         style={{
           animationDelay: `${index * 100}ms`,
         }}
       >
-        <div className="relative overflow-hidden aspect-4/3 rounded-t-2xl">
+        <div className="relative overflow-hidden aspect-4/3 rounded-t-2xl shrink-0">
           <Image
             src={coverImage}
             alt={pet.breed}
@@ -84,15 +84,15 @@ export function PetCard({ pet, index }: PetCardProps) {
           </div>
         </div>
 
-        <CardContent className="p-5">
+        <CardContent className="p-5 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors duration-200">
+              <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors duration-200 line-clamp-1">
                 {pet.breed}
               </h3>
               <p className="text-sm text-muted-foreground">{pet.species}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right shrink-0">
               <div className="flex items-center gap-1 text-primary font-bold">
                 <Tag className="h-4 w-4" />
                 Rs. {pet.price.toLocaleString()}
@@ -101,18 +101,14 @@ export function PetCard({ pet, index }: PetCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-3">
-            <Badge variant="outline" className="text-xs border-border">
-              {pet.species}
-            </Badge>
-            <Badge variant="outline" className="text-xs border-border">
-              {pet.age}
-            </Badge>
+          <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
+            <div className="text-xs text-muted-foreground">
+              Age: <span className="text-foreground font-medium">{pet.age}</span>
+            </div>
+            <div className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${pet.in_stock ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"}`}>
+              {pet.in_stock ? "In Stock" : "Out of Stock"}
+            </div>
           </div>
-
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {pet.description}
-          </p>
         </CardContent>
       </Card>
     </Link>

@@ -119,7 +119,53 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Auth page floating orb animations */
+@keyframes floatOrb1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(50px, -40px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-30px, 30px) scale(0.95);
+  }
+}
+
+@keyframes floatOrb2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(-60px, 40px) scale(1.15);
+  }
+
+  66% {
+    transform: translate(40px, -50px) scale(0.9);
+  }
+}
+
+@keyframes floatOrb3 {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(calc(-50% + 40px), calc(-50% - 30px)) scale(1.2);
   }
 }
