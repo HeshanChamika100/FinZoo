@@ -60,7 +60,7 @@ export function PetCard({ pet, index }: PetCardProps) {
           {/* Status badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {pet.featured && (
-              <Badge className="bg-primary text-primary-foreground">
+              <Badge className="bg-amber-500 text-white hover:bg-amber-600 border-transparent">
                 Featured
               </Badge>
             )}
@@ -87,10 +87,9 @@ export function PetCard({ pet, index }: PetCardProps) {
         <CardContent className="p-5 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors duration-200 line-clamp-1">
+              <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors duration-200 line-clamp-2">
                 {pet.breed}
               </h3>
-              <p className="text-sm text-muted-foreground">{pet.species}</p>
             </div>
             <div className="text-right shrink-0">
               <div className="flex items-center gap-1 text-primary font-bold">
