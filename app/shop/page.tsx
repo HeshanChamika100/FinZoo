@@ -68,7 +68,7 @@ export default function ShopPage() {
                <div className="flex flex-col lg:flex-row gap-8">
                   {/* Desktop Sidebar */}
                   <aside className="hidden lg:block w-64 shrink-0">
-                     <div className="sticky top-24">
+                     <div className="sticky top-24 border border-border rounded-xl p-6 bg-card shadow-sm">
                         <ShopFilters
                            minPrice={0}
                            maxPrice={maxPriceLimit}

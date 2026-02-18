@@ -93,6 +93,8 @@ export function ShopFilters({
             </div>
          </div>
 
+         <div className="h-px bg-border/50" />
+
          {/* Category Section */}
          <div className="space-y-4">
             <h3 className="text-base font-semibold text-foreground">Category</h3>
