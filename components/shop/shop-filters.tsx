@@ -114,12 +114,7 @@ export function ShopFilters({
                ))}
             </div>
 
-            <Button
-               variant="link"
-               className="p-0 h-auto text-foreground font-medium underline underline-offset-4 hover:text-primary"
-            >
-               Show more...
-            </Button>
+
          </div>
       </div>
    )
