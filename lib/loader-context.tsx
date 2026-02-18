@@ -13,12 +13,6 @@ const LoaderContext = createContext<LoaderContextType | undefined>(undefined)
 
 export function LoaderProvider({ children }: { children: ReactNode }) {
    const [isLoading, setIsLoading] = useState(false)
-   const pathname = usePathname()
-   const searchParams = useSearchParams()
-
-   useEffect(() => {
-      setIsLoading(false)
-   }, [pathname, searchParams])
 
    const startLoading = () => setIsLoading(true)
    const stopLoading = () => setIsLoading(false)
@@ -28,6 +22,18 @@ export function LoaderProvider({ children }: { children: ReactNode }) {
          {children}
       </LoaderContext.Provider>
    )
+}
+
+export function LoaderURLListener() {
+   const pathname = usePathname()
+   const searchParams = useSearchParams()
+   const { stopLoading } = useLoader()
+
+   useEffect(() => {
+      stopLoading()
+   }, [pathname, searchParams])
+
+   return null
 }
 
 export function useLoader() {

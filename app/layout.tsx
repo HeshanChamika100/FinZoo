@@ -1,11 +1,11 @@
-import React from "react"
+import React, { Suspense } from "react"
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { PetsProvider } from '@/lib/pets-context'
 import { AuthProvider } from '@/lib/auth-context'
-import { LoaderProvider } from '@/lib/loader-context'
+import { LoaderProvider, LoaderURLListener } from '@/lib/loader-context'
 import { GlobalLoader } from '@/components/ui/global-loader'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -133,6 +133,9 @@ export default function RootLayout({
       </head>
       <body className={`font-sans antialiased`}>
         <LoaderProvider>
+          <Suspense fallback={null}>
+            <LoaderURLListener />
+          </Suspense>
           <AuthProvider>
             <PetsProvider>
               <GlobalLoader />
