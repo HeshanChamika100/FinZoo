@@ -102,19 +102,13 @@ export function PetCard({ pet, index }: PetCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-3">
-            <Badge variant="outline" className="text-xs border-border">
-              {pet.species}
-            </Badge>
-            <Badge variant="outline" className="text-xs border-border">
-              {pet.age}
-            </Badge>
-          </div>
-
-          <div className="mt-auto">
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {stripMarkdown(pet.description || "")}
-            </p>
+          <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
+            <div className="text-xs text-muted-foreground">
+              Age: <span className="text-foreground font-medium">{pet.age}</span>
+            </div>
+            <div className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${pet.in_stock ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"}`}>
+              {pet.in_stock ? "In Stock" : "Out of Stock"}
+            </div>
           </div>
         </CardContent>
       </Card>
