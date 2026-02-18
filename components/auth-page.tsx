@@ -189,7 +189,7 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                            Login with Google
                         </button>
 
-                        <p className="text-xs text-gray-400 text-center mb-5">or use your email password</p>
+                        <p className="text-xs text-gray-400 text-center mb-5">or use your email to access admin features</p>
 
                         {/* Errors */}
                         {loginError && (
@@ -275,7 +275,7 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                            Sign up with Google
                         </button>
 
-                        <p className="text-xs text-gray-400 text-center mb-4">or use your email for registration</p>
+                        <p className="text-xs text-gray-400 text-center mb-4">or use your email to register for admin access</p>
 
                         {/* Errors / Success */}
                         {signupError && (
@@ -374,8 +374,8 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                      </h2>
                      <p className="text-sm text-white/70 text-center mb-8 max-w-[220px] leading-relaxed">
                         {isSignup
-                           ? "Enter your personal details to use all of site features"
-                           : "Register with your personal details to use all of site features"}
+                           ? "Sign in here to access admin functions"
+                           : "Sign up here to request admin access"}
                      </p>
                      <button
                         type="button"
@@ -408,7 +408,7 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                         {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon className="h-5 w-5" />}
                         Login with Google
                      </button>
-                     <p className="text-xs text-gray-400 text-center mb-5">or use your email password</p>
+                     <p className="text-xs text-gray-400 text-center mb-5">or use your email to access admin features</p>
 
                      {loginError && (
                         <div className="mb-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-600">{loginError}</div>
@@ -449,7 +449,7 @@ function AuthPageInner({ initialMode }: { initialMode: "login" | "signup" }) {
                         {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon className="h-5 w-5" />}
                         Sign up with Google
                      </button>
-                     <p className="text-xs text-gray-400 text-center mb-4">or use your email for registration</p>
+                     <p className="text-xs text-gray-400 text-center mb-4">or use your email to register for admin access</p>
 
                      {signupError && (
                         <div className="mb-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-600">{signupError}</div>
