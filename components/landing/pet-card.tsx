@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Pet } from "@/lib/pets-context"
 import { useState } from "react"
+import { stripMarkdown } from "@/lib/utils"
 
 interface PetCardProps {
   pet: Pet
@@ -112,7 +113,7 @@ export function PetCard({ pet, index }: PetCardProps) {
 
           <div className="mt-auto">
             <p className="text-sm text-muted-foreground line-clamp-2">
-              {pet.description}
+              {stripMarkdown(pet.description || "")}
             </p>
           </div>
         </CardContent>
