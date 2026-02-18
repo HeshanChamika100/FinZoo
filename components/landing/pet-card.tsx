@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Pet } from "@/lib/pets-context"
 import { useState } from "react"
+import { useLoader } from "@/lib/loader-context"
 
 interface PetCardProps {
   pet: Pet
@@ -17,11 +18,16 @@ interface PetCardProps {
 export function PetCard({ pet, index }: PetCardProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const { startLoading } = useLoader()
 
   const coverImage = pet.images?.[0] || pet.image || "/placeholder.svg"
 
   return (
-    <Link href={`/pets/${pet.id}`} className="block h-full">
+    <Link
+      href={`/pets/${pet.id}`}
+      className="block h-full"
+      onClick={() => startLoading()}
+    >
       <Card
         className="group overflow-hidden bg-card border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 cursor-pointer p-0 h-full flex flex-col"
         style={{
