@@ -149,7 +149,7 @@ export default function AdminDashboard() {
                 onClick={() => setAddPetModalOpen(true)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Add Pet</span>
               </Button>
               <Link href="/admin/users">
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
                   variant="outline"
                   className="border-border"
                 >
-                  <Users className="h-4 w-4 mr-2" />
+                  <Users className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Users</span>
                 </Button>
               </Link>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
                 onClick={() => setLogoutConfirm(true)}
                 className="border-border hover:bg-destructive hover:text-destructive-foreground"
               >
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>

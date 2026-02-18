@@ -264,7 +264,7 @@ export default function UserManagementPage() {
                         onClick={() => setLogoutConfirm(true)}
                         className="border-border hover:bg-destructive hover:text-destructive-foreground"
                      >
-                        <LogOut className="h-4 w-4 mr-2" />
+                        <LogOut className="h-4 w-4 sm:mr-2" />
                         <span className="hidden sm:inline">Logout</span>
                      </Button>
                   </div>
