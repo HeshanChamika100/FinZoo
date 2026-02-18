@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { usePets } from "@/lib/pets-context"
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 import type { ColorVariant } from "@/lib/pets-context"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/footer"
@@ -287,8 +288,8 @@ export default function PetDetailPage({
                       setImageLoaded(false)
                     }}
                     className={`relative h-9 w-9 rounded-full border-2 transition-all bg-gradient-to-br from-gray-200 to-gray-400 ${selectedColor === null
-                        ? "border-primary ring-2 ring-primary/30 scale-110"
-                        : "border-border hover:scale-105"
+                      ? "border-primary ring-2 ring-primary/30 scale-110"
+                      : "border-border hover:scale-105"
                       }`}
                     title="Default"
                   />
@@ -302,8 +303,8 @@ export default function PetDetailPage({
                         setImageLoaded(false)
                       }}
                       className={`relative h-9 w-9 rounded-full border-2 transition-all ${selectedColor === index
-                          ? "border-primary ring-2 ring-primary/30 scale-110"
-                          : "border-border hover:scale-105"
+                        ? "border-primary ring-2 ring-primary/30 scale-110"
+                        : "border-border hover:scale-105"
                         }`}
                       style={{ backgroundColor: variant.color_hex }}
                       title={variant.color_name}
@@ -331,8 +332,8 @@ export default function PetDetailPage({
               <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
                 <Info className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <div className="text-sm text-muted-foreground">About</div>
-                  <div className="text-foreground">{pet.description}</div>
+                  <div className="text-sm text-muted-foreground mb-1">About</div>
+                  <MarkdownRenderer content={pet.description || ""} />
                 </div>
               </div>
             </div>

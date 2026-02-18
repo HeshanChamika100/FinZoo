@@ -26,6 +26,7 @@ import { uploadPetImage } from "@/components/admin/image-upload"
 import { MultiImageUpload } from "@/components/admin/multi-image-upload"
 import { MultiVideoUpload } from "@/components/admin/multi-video-upload"
 import { uploadPetVideo } from "@/components/admin/video-upload"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Dialog,
   DialogContent,
@@ -517,17 +518,17 @@ export function EditPetModal({ pet, isOpen, onClose }: EditPetModalProps) {
                 <FileText className="h-4 w-4 text-primary" />
                 Description
               </div>
-              <div className="bg-muted/30 rounded-xl p-4 border border-border/50">
-                <Textarea
+              <div className="rounded-xl overflow-hidden border border-border/50">
+                <RichTextEditor
                   id="edit-description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Describe this pet's personality, traits, and any special needs..."
-                  rows={4}
-                  className="bg-background border-input resize-none"
+                  rows={6}
+                  className="border-0"
                 />
-                {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
               </div>
+              {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
             </div>
 
             {/* ── Section 4: Settings ── */}
