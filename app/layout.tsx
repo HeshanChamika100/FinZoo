@@ -7,6 +7,7 @@ import { PetsProvider } from '@/lib/pets-context'
 import { AuthProvider } from '@/lib/auth-context'
 import { LoaderProvider, LoaderURLListener } from '@/lib/loader-context'
 import { GlobalLoader } from '@/components/ui/global-loader'
+import { ChatWidget } from '@/components/chat-widget'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -143,6 +144,7 @@ export default function RootLayout({
             </PetsProvider>
           </AuthProvider>
         </LoaderProvider>
+        <ChatWidget />
         <Analytics />
       </body>
     </html>
