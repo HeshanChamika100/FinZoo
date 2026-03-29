@@ -66,14 +66,14 @@ export function Footer() {
   }, [])
 
   return (
-    <footer id="contact" ref={footerRef} className="bg-foreground text-background" style={{ perspective: "1200px" }}>
+    <footer id="contact" ref={footerRef} className="bg-background text-foreground border-t border-border" style={{ perspective: "1200px" }}>
       {/* Newsletter section */}
-      <div className="border-b border-background/10">
+      <div className="border-b border-border">
         <div ref={newsletterRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6" style={{ opacity: 0, transformStyle: "preserve-3d" }}>
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div>
               <h3 className="text-2xl font-bold mb-2">Stay in the Loop</h3>
-              <p className="text-background/70">
+              <p className="text-muted-foreground">
                 Get updates on new arrivals and exclusive offers.
               </p>
             </div>
@@ -81,7 +81,7 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-background/10 border-background/20 text-background placeholder:text-background/50 focus:border-primary"
+                className="bg-accent border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
               />
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0">
                 Subscribe
@@ -102,32 +102,32 @@ export function Footer() {
                 <span style={{ color: '#196677' }}>Fin</span><span style={{ color: '#c9a97d' }}>Zoo</span>
               </span>
             </Link>
-            <p className="text-background/70 mb-6">
+            <p className="text-muted-foreground mb-6">
               Your trusted partner in finding the perfect pet companion. Quality pets,
               exceptional care, lasting memories.
             </p>
             <div className="flex gap-4">
               <a
                 href="#"
-                className="p-2 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="p-2 rounded-full bg-accent hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Facebook className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="p-2 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="p-2 rounded-full bg-accent hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Twitter className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="p-2 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="p-2 rounded-full bg-accent hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="p-2 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="p-2 rounded-full bg-accent hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Youtube className="h-5 w-5" />
               </a>
@@ -141,7 +141,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Browse Pets
                 </Link>
@@ -149,7 +149,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#about"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   About Us
                 </Link>
@@ -157,7 +157,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Pet Care Tips
                 </Link>
@@ -165,7 +165,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   FAQ
                 </Link>
@@ -180,7 +180,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Dogs
                 </Link>
@@ -188,7 +188,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Cats
                 </Link>
@@ -196,7 +196,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Fish & Aquatic
                 </Link>
@@ -204,7 +204,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Birds
                 </Link>
@@ -212,7 +212,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-background/70 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Small Pets
                 </Link>
@@ -224,14 +224,14 @@ export function Footer() {
           <div style={{ opacity: 0 }}>
             <h4 className="text-lg font-semibold mb-6">Contact Us</h4>
             <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-background/70">
+              <li className="flex items-center gap-3 text-muted-foreground">
                 <MapPin className="h-5 w-5 text-primary shrink-0" />
                 <span>508/B/3, Pahala Padukka, Padukka</span>
               </li>
               <li>
                 <a
                   href="tel:+1234567890"
-                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
+                  className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Phone className="h-5 w-5 text-primary shrink-0" />
                   <span>+94 (70) 196-4941</span>
@@ -240,7 +240,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:hello@finzoo.com"
-                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
+                  className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Mail className="h-5 w-5 text-primary shrink-0" />
                   <span>contact.finzoo@gmail.com</span>
@@ -253,7 +253,7 @@ export function Footer() {
               href="https://www.google.com/maps/dir/?api=1&destination=6.838385,80.085175"
               target="_blank"
               rel="noopener noreferrer"
-              className="group mt-6 block overflow-hidden rounded-xl border border-background/10 relative cursor-pointer"
+              className="group mt-6 block overflow-hidden rounded-xl border border-border relative cursor-pointer"
             >
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0!2d80.085175!3d6.838385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwNTAnMTguMiJOIDgwwrAwNScwNi42IkU!5e0!3m2!1sen!2slk!4v1700000000000"
@@ -277,29 +277,29 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-background/10">
+      <div className="border-t border-border">
         <div ref={bottomRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6" style={{ opacity: 0 }}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-background/50 text-sm">
+            <p className="text-muted-foreground text-sm">
               &copy; {new Date().getFullYear()} FinZoo. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm">
               <Link
                 href="#"
-                className="text-background/50 hover:text-background transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Privacy Policy
               </Link>
               <Link
                 href="#"
-                className="text-background/50 hover:text-background transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Terms of Service
               </Link>
               {/* Discreet Admin Link */}
               <Link
                 href="/admin/login"
-                className="text-background/30 hover:text-background/50 transition-colors text-xs"
+                className="text-muted-foreground hover:text-muted-foreground transition-colors text-xs"
               >
                 Admin Access
               </Link>
