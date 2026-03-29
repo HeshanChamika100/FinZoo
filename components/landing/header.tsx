@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { usePets } from "@/lib/pets-context"
 import { useLoader } from "@/lib/loader-context"
+import { ThemeToggle } from "@/components/theme-toggle"
 import gsap from "gsap"
 
 interface HeaderProps {
@@ -141,7 +142,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
     <header
       ref={headerRef}
       className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${variant === 'white'
-        ? 'bg-white border-border'
+        ? 'bg-background border-border'
         : isOverHero
           ? 'bg-transparent border-transparent'
           : 'bg-background/80 backdrop-blur-md border-border'
@@ -174,7 +175,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                 onChange={handleSearchChange}
                 onFocus={() => setShowSearchResults(true)}
                 className={`pl-10 ${variant === 'white'
-                  ? 'bg-white border-border'
+                  ? 'bg-background border-border'
                   : isOverHero
                     ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
                     : 'bg-background border-border'
@@ -230,7 +231,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
           <div ref={navLinksRef} className="hidden md:flex items-center gap-8 shrink-0">
             <Link
               href="/shop"
-              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
               onClick={() => startLoading()}
             >
@@ -238,21 +239,21 @@ export function Header({ variant = 'default' }: HeaderProps) {
             </Link>
             <button
               onClick={() => scrollTo('featured')}
-              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
             >
               Featured Pets
             </button>
             <button
               onClick={() => scrollTo('about')}
-              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
             >
               About Us
             </button>
             <button
               onClick={() => scrollTo('contact')}
-              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+              className={`hover:text-primary transition-colors duration-200 font-medium ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                 }`}
             >
               Contact
@@ -260,13 +261,15 @@ export function Header({ variant = 'default' }: HeaderProps) {
             <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25">
               <Link href="/shop" onClick={() => startLoading()}>Browse All</Link>
             </Button>
+            <ThemeToggle isOverHero={isOverHero} variant={variant} />
           </div>
 
           <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle isOverHero={isOverHero} variant={variant} />
             <Button
               variant="ghost"
               size="icon"
-              className={`${variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
+              className={`${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white hover:text-white' : ''
                 }`}
               onClick={() => {
                 setMobileSearchOpen(!mobileSearchOpen)
@@ -278,7 +281,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className={`${variant === 'white' ? 'text-black' : isOverHero ? 'text-white hover:text-white' : ''
+              className={`${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white hover:text-white' : ''
                 }`}
               onClick={() => {
                 setMobileMenuOpen(!mobileMenuOpen)
@@ -292,7 +295,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
         {/* Mobile Search Dropdown */}
         {mobileSearchOpen && (
-          <div ref={mobileSearchRef} className={`md:hidden py-4 border-t animate-in rounded-xl slide-in-from-top-2 duration-200 ${variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
+          <div ref={mobileSearchRef} className={`md:hidden py-4 border-t animate-in rounded-xl slide-in-from-top-2 duration-200 ${variant === 'white' ? 'bg-background border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
             }`}>
             <div className="px-4">
               <div className="relative">
@@ -305,7 +308,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                   onChange={handleSearchChange}
                   autoFocus
                   className={`pl-10 ${variant === 'white'
-                    ? 'bg-white border-border'
+                    ? 'bg-background border-border'
                     : isOverHero
                       ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
                       : 'bg-background border-border'
@@ -361,12 +364,12 @@ export function Header({ variant = 'default' }: HeaderProps) {
         )}
 
         {mobileMenuOpen && (
-          <div className={`md:hidden py-4 border-t animate-in rounded-xl text-center slide-in-from-top-2 duration-200 ${variant === 'white' ? 'bg-white border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
+          <div className={`md:hidden py-4 border-t animate-in rounded-xl text-center slide-in-from-top-2 duration-200 ${variant === 'white' ? 'bg-background border-border' : isOverHero ? 'bg-black/80 backdrop-blur-md border-white/20' : 'bg-background/95 backdrop-blur-md border-border'
             }`}>
             <div className="flex flex-col gap-4">
               <Link
                 href="/shop"
-                className={`hover:text-primary transition-colors px-2 py-2 ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                className={`hover:text-primary transition-colors px-2 py-2 ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                   }`}
                 onClick={() => {
                   setMobileMenuOpen(false)
@@ -377,21 +380,21 @@ export function Header({ variant = 'default' }: HeaderProps) {
               </Link>
               <button
                 onClick={() => scrollTo('featured')}
-                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                   }`}
               >
                 Featured Pets
               </button>
               <button
                 onClick={() => scrollTo('about')}
-                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                   }`}
               >
                 About Us
               </button>
               <button
                 onClick={() => scrollTo('contact')}
-                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-black' : isOverHero ? 'text-white' : 'text-muted-foreground'
+                className={`hover:text-primary transition-colors px-2 py-2 text-center ${variant === 'white' ? 'text-foreground' : isOverHero ? 'text-white' : 'text-muted-foreground'
                   }`}
               >
                 Contact
